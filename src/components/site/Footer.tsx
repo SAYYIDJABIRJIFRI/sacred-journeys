@@ -40,7 +40,7 @@ export function Footer() {
               {[
                 { Icon: Twitter, href: "#", label: "Twitter" },
                 { Icon: Instagram, href: "#", label: "Instagram" },
-                { Icon: Github, href: "#", label: "GitHub" },
+                { Icon: Github, href: "https://github.com/ziyarath", label: "GitHub" },
                 { Icon: Mail, href: "mailto:hello@ziyarath.com", label: "Email" },
               ].map(({ Icon, href, label }) => (
                 <a
