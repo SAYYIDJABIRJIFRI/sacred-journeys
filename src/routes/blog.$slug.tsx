@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { ArrowLeft, Calendar, Clock, User } from "lucide-react";
-import { POSTS, getPostBySlug } from "@/data/posts";
+import { POSTS, getPostBySlug, type BlogPost } from "@/data/posts";
 
 export const Route = createFileRoute("/blog/$slug")({
   loader: ({ params }) => {
