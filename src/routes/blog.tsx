@@ -15,21 +15,30 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/blog")({
   validateSearch: zodValidator(searchSchema),
-  head: () => ({
-    meta: [
-      { title: "Blog — Ziyarath | Islamic Heritage Articles" },
-      {
-        name: "description",
-        content:
-          "Articles on Islamic history, Kerala heritage, sacred mosques, scholars and the etiquette of ziyarath.",
-      },
-      { property: "og:title", content: "Ziyarath Blog" },
-      {
-        property: "og:description",
-        content: "Stories and history from Islamic heritage across the world.",
-      },
-    ],
-  }),
+  loaderDeps: ({ search }) => ({ q: search.q }),
+  loader: ({ deps }) => ({ q: deps.q.trim().slice(0, 80) }),
+  head: ({ loaderData }) => {
+    const q = loaderData?.q ?? "";
+    const title = q
+      ? `Search: “${q}” — Ziyarath Blog`
+      : "Blog — Ziyarath | Islamic Heritage Articles";
+    const description = q
+      ? `Search results for “${q}” across Ziyarath articles on Islamic history, Kerala heritage and sacred mosques.`
+      : "Articles on Islamic history, Kerala heritage, sacred mosques, scholars and the etiquette of ziyarath.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        ...(q ? [{ name: "robots", content: "noindex,follow" }] : []),
+        { property: "og:title", content: q ? `Search: “${q}” — Ziyarath` : "Ziyarath Blog" },
+        { property: "og:description", content: description },
+        { property: "og:url", content: q ? `/blog?q=${encodeURIComponent(q)}` : "/blog" },
+      ],
+      links: [
+        { rel: "canonical", href: "/blog" },
+      ],
+    };
+  },
   component: BlogPage,
 });
 
@@ -66,6 +75,12 @@ function BlogPage() {
   const current = Math.min(Math.max(1, page), totalPages);
   const start = (current - 1) * PAGE_SIZE;
   const visible = filtered.slice(start, start + PAGE_SIZE);
+
+  const allTags = useMemo(
+    () => Array.from(new Set(POSTS.map((p) => p.tag))).sort(),
+    [],
+  );
+  const popularPosts = useMemo(() => POSTS.slice(0, 3), []);
 
   return (
     <SiteLayout>
@@ -126,59 +141,60 @@ function BlogPage() {
         )}
 
         {filtered.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border bg-card/50 p-12 text-center">
-            <p className="font-display text-xl">Nothing matches your search.</p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Try a different keyword — perhaps a place, person or topic.
-            </p>
+          <div className="space-y-12">
+            <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center">
+              <p className="font-display text-2xl">Nothing matches “{q}”.</p>
+              <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+                Try a different keyword — a place, person or topic — or explore the
+                suggestions below.
+              </p>
+              <button
+                type="button"
+                onClick={() => setInput("")}
+                className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+              >
+                Clear search
+              </button>
+            </div>
+
+            {allTags.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
+                  Browse by topic
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {allTags.map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => setInput(tag)}
+                      className="rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium transition-colors hover:border-primary hover:bg-primary/10 hover:text-primary"
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
+                Popular articles
+              </p>
+              <h2 className="mt-2 font-display text-2xl font-semibold">
+                Readers are loving these
+              </h2>
+              <div className="mt-6 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                {popularPosts.map((post) => (
+                  <PostCard key={post.slug} post={post} />
+                ))}
+              </div>
+            </div>
           </div>
         ) : (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {visible.map((post, i) => (
-              <article
-                key={post.slug}
-                style={{ animationDelay: `${i * 100}ms` }}
-                className="group overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-elegant animate-fade-up"
-              >
-                <Link
-                  to="/blog/$slug"
-                  params={{ slug: post.slug }}
-                  className="block"
-                  aria-label={post.title}
-                >
-                  <div className="aspect-[16/10] overflow-hidden">
-                    <img
-                      src={post.image}
-                      alt={post.title}
-                      loading="lazy"
-                      width={800}
-                      height={500}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      <span className="rounded-full bg-primary/10 px-2.5 py-0.5 font-medium text-primary">
-                        {post.tag}
-                      </span>
-                      <time
-                        dateTime={post.isoDate}
-                        className="inline-flex items-center gap-1"
-                      >
-                        <Calendar className="h-3 w-3" /> {post.date}
-                      </time>
-                    </div>
-                    <h2 className="mt-3 font-display text-xl font-semibold leading-snug group-hover:text-primary">
-                      {post.title}
-                    </h2>
-                    <p className="mt-2 text-sm text-muted-foreground">{post.excerpt}</p>
-                    <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
-                      Read article{" "}
-                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                    </span>
-                  </div>
-                </Link>
-              </article>
+              <PostCard key={post.slug} post={post} index={i} />
             ))}
           </div>
         )}
@@ -235,5 +251,56 @@ function BlogPage() {
         )}
       </section>
     </SiteLayout>
+  );
+}
+
+function PostCard({
+  post,
+  index = 0,
+}: {
+  post: (typeof POSTS)[number];
+  index?: number;
+}) {
+  return (
+    <article
+      style={{ animationDelay: `${index * 100}ms` }}
+      className="group overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-elegant animate-fade-up"
+    >
+      <Link
+        to="/blog/$slug"
+        params={{ slug: post.slug }}
+        className="block"
+        aria-label={post.title}
+      >
+        <div className="aspect-[16/10] overflow-hidden">
+          <img
+            src={post.image}
+            alt={post.title}
+            loading="lazy"
+            width={800}
+            height={500}
+            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        </div>
+        <div className="p-6">
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="rounded-full bg-primary/10 px-2.5 py-0.5 font-medium text-primary">
+              {post.tag}
+            </span>
+            <time dateTime={post.isoDate} className="inline-flex items-center gap-1">
+              <Calendar className="h-3 w-3" /> {post.date}
+            </time>
+          </div>
+          <h2 className="mt-3 font-display text-xl font-semibold leading-snug group-hover:text-primary">
+            {post.title}
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">{post.excerpt}</p>
+          <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
+            Read article{" "}
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </span>
+        </div>
+      </Link>
+    </article>
   );
 }
