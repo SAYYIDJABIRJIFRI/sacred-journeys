@@ -76,6 +76,12 @@ function BlogPage() {
   const start = (current - 1) * PAGE_SIZE;
   const visible = filtered.slice(start, start + PAGE_SIZE);
 
+  const allTags = useMemo(
+    () => Array.from(new Set(POSTS.map((p) => p.tag))).sort(),
+    [],
+  );
+  const popularPosts = useMemo(() => POSTS.slice(0, 3), []);
+
   return (
     <SiteLayout>
       <section className="border-b border-border bg-secondary/40">
