@@ -231,10 +231,12 @@ function HomePage() {
 
           <div className="mt-12 grid gap-7 md:grid-cols-3">
             {BLOG.map((post, i) => (
-              <article
+              <Link
                 key={post.slug}
+                to="/blog/$slug"
+                params={{ slug: post.slug }}
                 style={{ animationDelay: `${i * 120}ms` }}
-                className="group overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-elegant animate-fade-up"
+                className="group block overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-elegant animate-fade-up"
               >
                 <div className="aspect-[16/10] overflow-hidden">
                   <img
@@ -247,13 +249,13 @@ function HomePage() {
                   />
                 </div>
                 <div className="p-6">
-                  <h3 className="font-display text-lg font-semibold leading-snug">{post.title}</h3>
+                  <h3 className="font-display text-lg font-semibold leading-snug group-hover:text-primary">{post.title}</h3>
                   <p className="mt-2 text-sm text-muted-foreground">{post.excerpt}</p>
                   <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
-                    Read article <ArrowRight className="h-4 w-4" />
+                    Read article <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </span>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </div>
