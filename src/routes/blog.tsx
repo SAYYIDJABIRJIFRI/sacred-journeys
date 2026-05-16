@@ -15,21 +15,30 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/blog")({
   validateSearch: zodValidator(searchSchema),
-  head: () => ({
-    meta: [
-      { title: "Blog — Ziyarath | Islamic Heritage Articles" },
-      {
-        name: "description",
-        content:
-          "Articles on Islamic history, Kerala heritage, sacred mosques, scholars and the etiquette of ziyarath.",
-      },
-      { property: "og:title", content: "Ziyarath Blog" },
-      {
-        property: "og:description",
-        content: "Stories and history from Islamic heritage across the world.",
-      },
-    ],
-  }),
+  loaderDeps: ({ search }) => ({ q: search.q }),
+  loader: ({ deps }) => ({ q: deps.q.trim().slice(0, 80) }),
+  head: ({ loaderData }) => {
+    const q = loaderData?.q ?? "";
+    const title = q
+      ? `Search: “${q}” — Ziyarath Blog`
+      : "Blog — Ziyarath | Islamic Heritage Articles";
+    const description = q
+      ? `Search results for “${q}” across Ziyarath articles on Islamic history, Kerala heritage and sacred mosques.`
+      : "Articles on Islamic history, Kerala heritage, sacred mosques, scholars and the etiquette of ziyarath.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        ...(q ? [{ name: "robots", content: "noindex,follow" }] : []),
+        { property: "og:title", content: q ? `Search: “${q}” — Ziyarath` : "Ziyarath Blog" },
+        { property: "og:description", content: description },
+        { property: "og:url", content: q ? `/blog?q=${encodeURIComponent(q)}` : "/blog" },
+      ],
+      links: [
+        { rel: "canonical", href: "/blog" },
+      ],
+    };
+  },
   component: BlogPage,
 });
 
