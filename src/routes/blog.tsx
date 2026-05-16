@@ -1,14 +1,16 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
+import { useMemo, useState, useEffect } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
-import { ArrowRight, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, Calendar, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { POSTS } from "@/data/posts";
 
 const PAGE_SIZE = 6;
 
 const searchSchema = z.object({
   page: fallback(z.number().int().min(1), 1).default(1),
+  q: fallback(z.string().max(100), "").default(""),
 });
 
 export const Route = createFileRoute("/blog")({
@@ -32,11 +34,38 @@ export const Route = createFileRoute("/blog")({
 });
 
 function BlogPage() {
-  const { page } = Route.useSearch();
-  const totalPages = Math.max(1, Math.ceil(POSTS.length / PAGE_SIZE));
+  const { page, q } = Route.useSearch();
+  const navigate = useNavigate({ from: "/blog" });
+  const [input, setInput] = useState(q);
+
+  // Keep input in sync if URL changes (e.g. back/forward)
+  useEffect(() => {
+    setInput(q);
+  }, [q]);
+
+  // Debounce input → URL
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (input !== q) {
+        navigate({ search: { q: input, page: 1 }, replace: true });
+      }
+    }, 250);
+    return () => clearTimeout(t);
+  }, [input, q, navigate]);
+
+  const filtered = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    if (!needle) return POSTS;
+    return POSTS.filter((p) => {
+      const haystack = `${p.title} ${p.excerpt} ${p.tag} ${p.author}`.toLowerCase();
+      return haystack.includes(needle);
+    });
+  }, [q]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const current = Math.min(Math.max(1, page), totalPages);
   const start = (current - 1) * PAGE_SIZE;
-  const visible = POSTS.slice(start, start + PAGE_SIZE);
+  const visible = filtered.slice(start, start + PAGE_SIZE);
 
   return (
     <SiteLayout>
@@ -52,58 +81,107 @@ function BlogPage() {
             Carefully researched articles on Islamic history, sacred places and the
             living traditions of the ummah.
           </p>
+
+          <div className="mt-8 max-w-xl">
+            <label htmlFor="blog-search" className="sr-only">
+              Search articles
+            </label>
+            <div className="relative">
+              <Search
+                aria-hidden="true"
+                className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              />
+              <input
+                id="blog-search"
+                type="search"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Search by title, topic or author…"
+                maxLength={100}
+                className="h-12 w-full rounded-full border border-border bg-card pl-11 pr-11 text-sm shadow-card outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+              />
+              {input && (
+                <button
+                  type="button"
+                  onClick={() => setInput("")}
+                  aria-label="Clear search"
+                  className="absolute right-3 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {visible.map((post, i) => (
-            <article
-              key={post.slug}
-              style={{ animationDelay: `${i * 100}ms` }}
-              className="group overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-elegant animate-fade-up"
-            >
-              <Link
-                to="/blog/$slug"
-                params={{ slug: post.slug }}
-                className="block"
-                aria-label={post.title}
+        {q && (
+          <p className="mb-8 text-sm text-muted-foreground">
+            {filtered.length === 0
+              ? "No articles found for"
+              : `Showing ${filtered.length} ${filtered.length === 1 ? "article" : "articles"} for`}{" "}
+            <span className="font-medium text-foreground">"{q}"</span>
+          </p>
+        )}
+
+        {filtered.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-border bg-card/50 p-12 text-center">
+            <p className="font-display text-xl">Nothing matches your search.</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Try a different keyword — perhaps a place, person or topic.
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {visible.map((post, i) => (
+              <article
+                key={post.slug}
+                style={{ animationDelay: `${i * 100}ms` }}
+                className="group overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-elegant animate-fade-up"
               >
-                <div className="aspect-[16/10] overflow-hidden">
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    loading="lazy"
-                    width={800}
-                    height={500}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span className="rounded-full bg-primary/10 px-2.5 py-0.5 font-medium text-primary">
-                      {post.tag}
-                    </span>
-                    <time
-                      dateTime={post.isoDate}
-                      className="inline-flex items-center gap-1"
-                    >
-                      <Calendar className="h-3 w-3" /> {post.date}
-                    </time>
+                <Link
+                  to="/blog/$slug"
+                  params={{ slug: post.slug }}
+                  className="block"
+                  aria-label={post.title}
+                >
+                  <div className="aspect-[16/10] overflow-hidden">
+                    <img
+                      src={post.image}
+                      alt={post.title}
+                      loading="lazy"
+                      width={800}
+                      height={500}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
                   </div>
-                  <h2 className="mt-3 font-display text-xl font-semibold leading-snug group-hover:text-primary">
-                    {post.title}
-                  </h2>
-                  <p className="mt-2 text-sm text-muted-foreground">{post.excerpt}</p>
-                  <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
-                    Read article{" "}
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </span>
-                </div>
-              </Link>
-            </article>
-          ))}
-        </div>
+                  <div className="p-6">
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      <span className="rounded-full bg-primary/10 px-2.5 py-0.5 font-medium text-primary">
+                        {post.tag}
+                      </span>
+                      <time
+                        dateTime={post.isoDate}
+                        className="inline-flex items-center gap-1"
+                      >
+                        <Calendar className="h-3 w-3" /> {post.date}
+                      </time>
+                    </div>
+                    <h2 className="mt-3 font-display text-xl font-semibold leading-snug group-hover:text-primary">
+                      {post.title}
+                    </h2>
+                    <p className="mt-2 text-sm text-muted-foreground">{post.excerpt}</p>
+                    <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
+                      Read article{" "}
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </span>
+                  </div>
+                </Link>
+              </article>
+            ))}
+          </div>
+        )}
 
         {totalPages > 1 && (
           <nav
@@ -112,7 +190,7 @@ function BlogPage() {
           >
             <Link
               to="/blog"
-              search={{ page: Math.max(1, current - 1) }}
+              search={{ q, page: Math.max(1, current - 1) }}
               aria-label="Previous page"
               aria-disabled={current === 1}
               className={`inline-flex h-10 items-center gap-1 rounded-full border border-border bg-card px-4 text-sm font-medium transition-colors hover:bg-primary hover:text-primary-foreground ${
@@ -129,7 +207,7 @@ function BlogPage() {
                 <Link
                   key={n}
                   to="/blog"
-                  search={{ page: n }}
+                  search={{ q, page: n }}
                   aria-current={active ? "page" : undefined}
                   className={`grid h-10 w-10 place-items-center rounded-full border text-sm font-semibold transition-colors ${
                     active
@@ -144,7 +222,7 @@ function BlogPage() {
 
             <Link
               to="/blog"
-              search={{ page: Math.min(totalPages, current + 1) }}
+              search={{ q, page: Math.min(totalPages, current + 1) }}
               aria-label="Next page"
               aria-disabled={current === totalPages}
               className={`inline-flex h-10 items-center gap-1 rounded-full border border-border bg-card px-4 text-sm font-medium transition-colors hover:bg-primary hover:text-primary-foreground ${
