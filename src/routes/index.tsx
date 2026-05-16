@@ -60,11 +60,7 @@ const HIGHLIGHTS = [
   { Icon: Sparkles, title: "Cultural Heritage", text: "Living traditions, architecture and devotional practice." },
 ];
 
-const BLOG = [
-  { title: "History of Malik Dinar in Kerala", excerpt: "Tracing the journey of Islam's earliest envoy to the Malabar Coast.", image: blog1, slug: "malik-dinar-kerala" },
-  { title: "Islamic Heritage in India", excerpt: "From the Deccan Sultanates to coastal mosques — a thousand years of legacy.", image: blog2, slug: "islamic-heritage-india" },
-  { title: "Importance of Ziyarath in Islam", excerpt: "Understanding the spiritual etiquette of visiting sacred places.", image: blog3, slug: "importance-of-ziyarath" },
-];
+const BLOG = POSTS.slice(0, 3);
 
 function HomePage() {
   return (
