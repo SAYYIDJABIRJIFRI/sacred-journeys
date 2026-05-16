@@ -6,9 +6,7 @@ import placeHaram from "@/assets/place-haram.jpg";
 import placeNabawi from "@/assets/place-nabawi.jpg";
 import placeMalikDinar from "@/assets/place-malikdinar.jpg";
 import keralaHeritage from "@/assets/kerala-heritage.jpg";
-import blog1 from "@/assets/blog-1.jpg";
-import blog2 from "@/assets/blog-2.jpg";
-import blog3 from "@/assets/blog-3.jpg";
+import { POSTS } from "@/data/posts";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -62,11 +60,7 @@ const HIGHLIGHTS = [
   { Icon: Sparkles, title: "Cultural Heritage", text: "Living traditions, architecture and devotional practice." },
 ];
 
-const BLOG = [
-  { title: "History of Malik Dinar in Kerala", excerpt: "Tracing the journey of Islam's earliest envoy to the Malabar Coast.", image: blog1, slug: "malik-dinar-kerala" },
-  { title: "Islamic Heritage in India", excerpt: "From the Deccan Sultanates to coastal mosques — a thousand years of legacy.", image: blog2, slug: "islamic-heritage-india" },
-  { title: "Importance of Ziyarath in Islam", excerpt: "Understanding the spiritual etiquette of visiting sacred places.", image: blog3, slug: "importance-of-ziyarath" },
-];
+const BLOG = POSTS.slice(0, 3);
 
 function HomePage() {
   return (
@@ -237,10 +231,12 @@ function HomePage() {
 
           <div className="mt-12 grid gap-7 md:grid-cols-3">
             {BLOG.map((post, i) => (
-              <article
+              <Link
                 key={post.slug}
+                to="/blog/$slug"
+                params={{ slug: post.slug }}
                 style={{ animationDelay: `${i * 120}ms` }}
-                className="group overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-elegant animate-fade-up"
+                className="group block overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-elegant animate-fade-up"
               >
                 <div className="aspect-[16/10] overflow-hidden">
                   <img
@@ -253,13 +249,13 @@ function HomePage() {
                   />
                 </div>
                 <div className="p-6">
-                  <h3 className="font-display text-lg font-semibold leading-snug">{post.title}</h3>
+                  <h3 className="font-display text-lg font-semibold leading-snug group-hover:text-primary">{post.title}</h3>
                   <p className="mt-2 text-sm text-muted-foreground">{post.excerpt}</p>
                   <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
-                    Read article <ArrowRight className="h-4 w-4" />
+                    Read article <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </span>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </div>
