@@ -135,16 +135,63 @@ function BlogPage() {
         )}
 
         {filtered.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border bg-card/50 p-12 text-center">
-            <p className="font-display text-xl">Nothing matches your search.</p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Try a different keyword — perhaps a place, person or topic.
-            </p>
+          <div className="space-y-12">
+            <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center">
+              <p className="font-display text-2xl">Nothing matches “{q}”.</p>
+              <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+                Try a different keyword — a place, person or topic — or explore the
+                suggestions below.
+              </p>
+              <button
+                type="button"
+                onClick={() => setInput("")}
+                className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+              >
+                Clear search
+              </button>
+            </div>
+
+            {allTags.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
+                  Browse by topic
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {allTags.map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => setInput(tag)}
+                      className="rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium transition-colors hover:border-primary hover:bg-primary/10 hover:text-primary"
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
+                Popular articles
+              </p>
+              <h2 className="mt-2 font-display text-2xl font-semibold">
+                Readers are loving these
+              </h2>
+              <div className="mt-6 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                {popularPosts.map((post) => (
+                  <PostCard key={post.slug} post={post} />
+                ))}
+              </div>
+            </div>
           </div>
         ) : (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {visible.map((post, i) => (
-              <article
+              <PostCard key={post.slug} post={post} index={i} />
+            ))}
+          </div>
+        )}
                 key={post.slug}
                 style={{ animationDelay: `${i * 100}ms` }}
                 className="group overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-elegant animate-fade-up"
