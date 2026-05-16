@@ -6,9 +6,7 @@ import placeHaram from "@/assets/place-haram.jpg";
 import placeNabawi from "@/assets/place-nabawi.jpg";
 import placeMalikDinar from "@/assets/place-malikdinar.jpg";
 import keralaHeritage from "@/assets/kerala-heritage.jpg";
-import blog1 from "@/assets/blog-1.jpg";
-import blog2 from "@/assets/blog-2.jpg";
-import blog3 from "@/assets/blog-3.jpg";
+import { POSTS } from "@/data/posts";
 
 export const Route = createFileRoute("/")({
   head: () => ({
