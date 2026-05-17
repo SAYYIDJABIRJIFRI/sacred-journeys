@@ -13,7 +13,7 @@ const searchSchema = z.object({
   q: fallback(z.string().max(100), "").default(""),
 });
 
-export const Route = createFileRoute("/blog")({
+export const Route = createFileRoute("/blog/")({
   validateSearch: zodValidator(searchSchema),
   loaderDeps: ({ search }) => ({ q: search.q }),
   loader: ({ deps }) => ({ q: deps.q.trim().slice(0, 80) }),
