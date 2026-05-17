@@ -235,6 +235,7 @@ function HomePage() {
                 key={post.slug}
                 to="/blog/$slug"
                 params={{ slug: post.slug }}
+                search={{}}
                 style={{ animationDelay: `${i * 120}ms` }}
                 className="group block overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-all hover:-translate-y-1 hover:shadow-elegant animate-fade-up"
               >
