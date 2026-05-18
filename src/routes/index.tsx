@@ -6,9 +6,19 @@ import placeHaram from "@/assets/place-haram.jpg";
 import placeNabawi from "@/assets/place-nabawi.jpg";
 import placeMalikDinar from "@/assets/place-malikdinar.jpg";
 import keralaHeritage from "@/assets/kerala-heritage.jpg";
-import { POSTS } from "@/data/posts";
+import {
+  sanityClient,
+  allPostsQuery,
+  postImageUrl,
+  type SanityPost,
+} from "@/lib/sanity";
+import { resolveCover } from "@/lib/post-images";
 
 export const Route = createFileRoute("/")({
+  loader: async () => {
+    const posts = await sanityClient.fetch<SanityPost[]>(allPostsQuery);
+    return { posts: posts.slice(0, 3) };
+  },
   head: () => ({
     meta: [
       { title: "Ziyarath — Discover Islamic Heritage Across Kerala, India & The World" },
@@ -60,9 +70,8 @@ const HIGHLIGHTS = [
   { Icon: Sparkles, title: "Cultural Heritage", text: "Living traditions, architecture and devotional practice." },
 ];
 
-const BLOG = POSTS.slice(0, 3);
-
 function HomePage() {
+  const { posts: BLOG } = Route.useLoaderData() as { posts: SanityPost[] };
   return (
     <SiteLayout>
       {/* HERO */}
@@ -241,7 +250,7 @@ function HomePage() {
               >
                 <div className="aspect-[16/10] overflow-hidden">
                   <img
-                    src={post.image}
+                    src={resolveCover(post.slug, postImageUrl(post, 800, 576))}
                     alt={post.title}
                     loading="lazy"
                     width={800}
