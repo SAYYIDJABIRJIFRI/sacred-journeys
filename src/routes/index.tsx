@@ -250,7 +250,7 @@ function HomePage() {
               >
                 <div className="aspect-[16/10] overflow-hidden">
                   <img
-                    src={post.image}
+                    src={resolveCover(post.slug, postImageUrl(post, 800, 576))}
                     alt={post.title}
                     loading="lazy"
                     width={800}
