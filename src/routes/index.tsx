@@ -6,9 +6,19 @@ import placeHaram from "@/assets/place-haram.jpg";
 import placeNabawi from "@/assets/place-nabawi.jpg";
 import placeMalikDinar from "@/assets/place-malikdinar.jpg";
 import keralaHeritage from "@/assets/kerala-heritage.jpg";
-import { POSTS } from "@/data/posts";
+import {
+  sanityClient,
+  allPostsQuery,
+  postImageUrl,
+  type SanityPost,
+} from "@/lib/sanity";
+import { resolveCover } from "@/lib/post-images";
 
 export const Route = createFileRoute("/")({
+  loader: async () => {
+    const posts = await sanityClient.fetch<SanityPost[]>(allPostsQuery);
+    return { posts: posts.slice(0, 3) };
+  },
   head: () => ({
     meta: [
       { title: "Ziyarath — Discover Islamic Heritage Across Kerala, India & The World" },
