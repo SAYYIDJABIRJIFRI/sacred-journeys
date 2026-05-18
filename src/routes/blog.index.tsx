@@ -4,7 +4,14 @@ import { z } from "zod";
 import { useMemo, useState, useEffect } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { ArrowRight, Calendar, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
-import { POSTS } from "@/data/posts";
+import {
+  sanityClient,
+  allPostsQuery,
+  formatDate,
+  postImageUrl,
+  type SanityPost,
+} from "@/lib/sanity";
+import { resolveCover } from "@/lib/post-images";
 
 const PAGE_SIZE = 6;
 
@@ -16,7 +23,10 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/blog/")({
   validateSearch: zodValidator(searchSchema),
   loaderDeps: ({ search }) => ({ q: search.q }),
-  loader: ({ deps }) => ({ q: deps.q.trim().slice(0, 80) }),
+  loader: async ({ deps }) => {
+    const posts = await sanityClient.fetch<SanityPost[]>(allPostsQuery);
+    return { q: deps.q.trim().slice(0, 80), posts };
+  },
   head: ({ loaderData }) => {
     const q = loaderData?.q ?? "";
     const title = q
@@ -34,25 +44,30 @@ export const Route = createFileRoute("/blog/")({
         { property: "og:description", content: description },
         { property: "og:url", content: q ? `/blog?q=${encodeURIComponent(q)}` : "/blog" },
       ],
-      links: [
-        { rel: "canonical", href: "/blog" },
-      ],
+      links: [{ rel: "canonical", href: "/blog" }],
     };
   },
+  errorComponent: ({ error }) => (
+    <SiteLayout>
+      <div className="mx-auto max-w-3xl px-4 py-32 text-center">
+        <h1 className="font-display text-3xl font-semibold">Could not load articles</h1>
+        <p className="mt-3 text-muted-foreground">{error.message}</p>
+      </div>
+    </SiteLayout>
+  ),
   component: BlogPage,
 });
 
 function BlogPage() {
   const { page, q } = Route.useSearch();
+  const { posts } = Route.useLoaderData();
   const navigate = useNavigate({ from: "/blog" });
   const [input, setInput] = useState(q);
 
-  // Keep input in sync if URL changes (e.g. back/forward)
   useEffect(() => {
     setInput(q);
   }, [q]);
 
-  // Debounce input → URL
   useEffect(() => {
     const t = setTimeout(() => {
       if (input !== q) {
@@ -64,12 +79,12 @@ function BlogPage() {
 
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    if (!needle) return POSTS;
-    return POSTS.filter((p) => {
-      const haystack = `${p.title} ${p.excerpt} ${p.tag} ${p.author}`.toLowerCase();
+    if (!needle) return posts;
+    return posts.filter((p) => {
+      const haystack = `${p.title} ${p.excerpt ?? ""} ${p.tag ?? ""} ${p.author ?? ""}`.toLowerCase();
       return haystack.includes(needle);
     });
-  }, [q]);
+  }, [q, posts]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const current = Math.min(Math.max(1, page), totalPages);
@@ -77,10 +92,10 @@ function BlogPage() {
   const visible = filtered.slice(start, start + PAGE_SIZE);
 
   const allTags = useMemo(
-    () => Array.from(new Set(POSTS.map((p) => p.tag))).sort(),
-    [],
+    () => Array.from(new Set(posts.map((p) => p.tag).filter(Boolean) as string[])).sort(),
+    [posts],
   );
-  const popularPosts = useMemo(() => POSTS.slice(0, 3), []);
+  const popularPosts = useMemo(() => posts.slice(0, 3), [posts]);
 
   return (
     <SiteLayout>
@@ -254,13 +269,8 @@ function BlogPage() {
   );
 }
 
-function PostCard({
-  post,
-  index = 0,
-}: {
-  post: (typeof POSTS)[number];
-  index?: number;
-}) {
+function PostCard({ post, index = 0 }: { post: SanityPost; index?: number }) {
+  const img = resolveCover(post.slug, postImageUrl(post, 800, 500));
   return (
     <article
       style={{ animationDelay: `${index * 100}ms` }}
@@ -269,12 +279,13 @@ function PostCard({
       <Link
         to="/blog/$slug"
         params={{ slug: post.slug }}
+        search={{}}
         className="block"
         aria-label={post.title}
       >
         <div className="aspect-[16/10] overflow-hidden">
           <img
-            src={post.image}
+            src={img}
             alt={post.title}
             loading="lazy"
             width={800}
@@ -284,17 +295,23 @@ function PostCard({
         </div>
         <div className="p-6">
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="rounded-full bg-primary/10 px-2.5 py-0.5 font-medium text-primary">
-              {post.tag}
-            </span>
-            <time dateTime={post.isoDate} className="inline-flex items-center gap-1">
-              <Calendar className="h-3 w-3" /> {post.date}
-            </time>
+            {post.tag && (
+              <span className="rounded-full bg-primary/10 px-2.5 py-0.5 font-medium text-primary">
+                {post.tag}
+              </span>
+            )}
+            {post.publishedAt && (
+              <time dateTime={post.publishedAt} className="inline-flex items-center gap-1">
+                <Calendar className="h-3 w-3" /> {formatDate(post.publishedAt)}
+              </time>
+            )}
           </div>
           <h2 className="mt-3 font-display text-xl font-semibold leading-snug group-hover:text-primary">
             {post.title}
           </h2>
-          <p className="mt-2 text-sm text-muted-foreground">{post.excerpt}</p>
+          {post.excerpt && (
+            <p className="mt-2 text-sm text-muted-foreground">{post.excerpt}</p>
+          )}
           <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
             Read article{" "}
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
