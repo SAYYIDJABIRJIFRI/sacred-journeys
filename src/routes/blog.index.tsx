@@ -60,7 +60,7 @@ export const Route = createFileRoute("/blog/")({
 
 function BlogPage() {
   const { page, q } = Route.useSearch();
-  const { posts } = Route.useLoaderData();
+  const { posts } = Route.useLoaderData() as { posts: SanityPost[]; q: string };
   const navigate = useNavigate({ from: "/blog" });
   const [input, setInput] = useState(q);
 
