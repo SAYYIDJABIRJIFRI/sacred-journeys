@@ -70,9 +70,8 @@ const HIGHLIGHTS = [
   { Icon: Sparkles, title: "Cultural Heritage", text: "Living traditions, architecture and devotional practice." },
 ];
 
-const BLOG = POSTS.slice(0, 3);
-
 function HomePage() {
+  const { posts: BLOG } = Route.useLoaderData() as { posts: SanityPost[] };
   return (
     <SiteLayout>
       {/* HERO */}
