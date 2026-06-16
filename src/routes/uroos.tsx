@@ -664,15 +664,15 @@ function TimelineView({
               className="block w-full text-left"
             >
               <Card className="p-4 transition-shadow hover:shadow-elegant">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="mb-1 flex flex-wrap items-center gap-2">
                   <Badge variant="secondary" className="text-[10px]">
                     {f.month.num}. {f.month.name}
                   </Badge>
                   <RegionBadge region={f.region} />
                 </div>
-                <span className="inline-flex items-start gap-1.5 text-sm font-medium">
+                <span className="flex items-start gap-1.5 text-sm font-medium">
                   <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
-                  {f.text}
+                  <span className="min-w-0 flex-1 break-words">{f.text}</span>
                 </span>
               </Card>
             </button>
