@@ -222,7 +222,7 @@ function UroosPage() {
               <button
                 onClick={() => setView("grid")}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition-colors",
+                  "inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded px-3 py-2 text-xs font-medium transition-colors sm:flex-none",
                   view === "grid"
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground",
@@ -233,7 +233,7 @@ function UroosPage() {
               <button
                 onClick={() => setView("timeline")}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition-colors",
+                  "inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded px-3 py-2 text-xs font-medium transition-colors sm:flex-none",
                   view === "timeline"
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground",
