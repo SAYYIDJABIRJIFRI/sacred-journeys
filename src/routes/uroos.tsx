@@ -53,6 +53,17 @@ export const Route = createFileRoute("/uroos")({
 /* ---------- helpers ---------- */
 
 function currentHijriMonth(): number {
+  try {
+    const parts = new Intl.DateTimeFormat("en-u-ca-islamic-umalqura", {
+      month: "numeric",
+    }).formatToParts(new Date());
+    const m = parts.find((p) => p.type === "month")?.value;
+    const n = m ? parseInt(m, 10) : NaN;
+    if (n >= 1 && n <= 12) return n;
+  } catch {
+    /* fall through */
+  }
+  // Fallback approximation
   const epoch = Date.UTC(622, 6, 16);
   const days = (Date.now() - epoch) / 86400000;
   const hYear = Math.floor((days * 30) / 10631) + 1;
@@ -593,7 +604,7 @@ function GridView({
               </div>
             )}
             <div className="mb-5 flex items-baseline gap-3 border-b border-border pb-3">
-              <span className="font-display text-3xl font-semibold text-primary/70 tabular-nums">
+              <span className="font-sans text-2xl font-bold text-primary/70 tabular-nums tracking-tight">
                 {String(m.num).padStart(2, "0")}
               </span>
               <div className="flex-1">
