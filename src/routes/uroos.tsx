@@ -615,20 +615,20 @@ function GridView({
               </div>
             </div>
 
-            <ul className="space-y-3.5">
+            <ul className="space-y-3">
               {days.map((day) => (
                 <li key={day} className="flex gap-3">
-                  <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-xs font-semibold text-primary tabular-nums">
+                  <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-sm font-semibold text-primary tabular-nums">
                     {day}
                   </span>
-                  <div className="flex-1 space-y-1.5">
+                  <div className="flex-1 space-y-1">
                     {dMap.get(day)!.map((e, i) => (
                       <button
                         key={i}
                         onClick={() => onOpen(e)}
-                        className="group/link flex w-full items-start gap-1.5 text-left text-sm leading-snug text-foreground hover:text-primary transition-colors"
+                        className="group/link flex w-full min-h-10 items-start gap-2 rounded-md py-1.5 px-1 -mx-1 text-left text-sm leading-snug text-foreground hover:bg-muted/50 hover:text-primary transition-colors"
                       >
-                        <span className="flex-1">{highlightText(e.text, query)}</span>
+                        <span className="min-w-0 flex-1 break-words">{highlightText(e.text, query)}</span>
                         <RegionDot region={e.region} />
                       </button>
                     ))}
