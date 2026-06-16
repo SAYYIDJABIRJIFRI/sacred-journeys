@@ -724,7 +724,7 @@ function EntryDialog({
         {entry && (
           <>
             <DialogHeader>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="secondary" className="text-[10px]">
                   Day {entry.day}
                 </Badge>
@@ -733,7 +733,7 @@ function EntryDialog({
                 </Badge>
                 <RegionBadge region={entry.region} />
               </div>
-              <DialogTitle className="mt-3 font-display text-2xl leading-tight">
+              <DialogTitle className="mt-3 font-display text-xl sm:text-2xl leading-tight break-words pr-8">
                 {entry.text}
               </DialogTitle>
               <DialogDescription>
