@@ -459,7 +459,7 @@ function RegionChip({
     <button
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all",
+        "inline-flex min-h-10 items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-medium transition-all",
         active
           ? "border-primary bg-primary text-primary-foreground shadow-sm"
           : "border-border bg-card hover:border-primary/40 hover:text-primary",
@@ -481,14 +481,14 @@ function RegionChip({
 
 function FilterPill({ label, onClear }: { label: string; onClear: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-primary">
+    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 pl-2.5 pr-1 py-1 text-primary">
       {label}
       <button
         onClick={onClear}
-        className="rounded-full p-0.5 hover:bg-primary/20"
+        className="grid h-7 w-7 place-items-center rounded-full hover:bg-primary/20"
         aria-label="Remove filter"
       >
-        <X className="h-3 w-3" />
+        <X className="h-3.5 w-3.5" />
       </button>
     </span>
   );
