@@ -604,7 +604,7 @@ function GridView({
               </div>
             )}
             <div className="mb-5 flex items-baseline gap-3 border-b border-border pb-3">
-              <span className="font-display text-3xl font-semibold text-primary/70 tabular-nums">
+              <span className="font-sans text-2xl font-bold text-primary/70 tabular-nums tracking-tight">
                 {String(m.num).padStart(2, "0")}
               </span>
               <div className="flex-1">
