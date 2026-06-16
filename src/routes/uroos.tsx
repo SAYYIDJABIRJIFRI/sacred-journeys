@@ -529,17 +529,17 @@ function MiniCalendar({
               disabled={!has}
               title={has ? `${count} entries` : "No entries"}
               className={cn(
-                "relative aspect-square rounded-md text-[11px] font-medium tabular-nums transition-all",
+                "relative grid min-h-11 place-items-center rounded-md text-xs font-medium tabular-nums transition-all",
                 isSel
                   ? "bg-primary text-primary-foreground shadow-sm scale-105"
                   : has
                     ? "bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer"
-                    : "bg-muted/50 text-muted-foreground/40 cursor-not-allowed",
+                    : "bg-muted/40 text-muted-foreground/40 cursor-not-allowed",
               )}
             >
               {d}
               {has && !isSel && (
-                <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-primary" />
+                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-primary" />
               )}
             </button>
           );
