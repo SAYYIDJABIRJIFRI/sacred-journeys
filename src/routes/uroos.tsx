@@ -420,7 +420,7 @@ function ChipButton({
     <button
       onClick={onClick}
       className={cn(
-        "relative shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all",
+        "relative shrink-0 inline-flex min-h-9 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all",
         active
           ? "border-primary bg-primary text-primary-foreground shadow-sm"
           : "border-border bg-card text-foreground hover:border-primary/40 hover:text-primary",
