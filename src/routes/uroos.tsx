@@ -222,7 +222,7 @@ function UroosPage() {
               <button
                 onClick={() => setView("grid")}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition-colors",
+                  "inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded px-3 py-2 text-xs font-medium transition-colors sm:flex-none",
                   view === "grid"
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground",
@@ -233,7 +233,7 @@ function UroosPage() {
               <button
                 onClick={() => setView("timeline")}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition-colors",
+                  "inline-flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded px-3 py-2 text-xs font-medium transition-colors sm:flex-none",
                   view === "timeline"
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground",
@@ -420,7 +420,7 @@ function ChipButton({
     <button
       onClick={onClick}
       className={cn(
-        "relative shrink-0 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all",
+        "relative shrink-0 inline-flex min-h-9 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all",
         active
           ? "border-primary bg-primary text-primary-foreground shadow-sm"
           : "border-border bg-card text-foreground hover:border-primary/40 hover:text-primary",
@@ -459,7 +459,7 @@ function RegionChip({
     <button
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all",
+        "inline-flex min-h-10 items-center gap-2 rounded-full border px-3.5 py-2 text-sm font-medium transition-all",
         active
           ? "border-primary bg-primary text-primary-foreground shadow-sm"
           : "border-border bg-card hover:border-primary/40 hover:text-primary",
@@ -481,14 +481,14 @@ function RegionChip({
 
 function FilterPill({ label, onClear }: { label: string; onClear: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-primary">
+    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 pl-2.5 pr-1 py-1 text-primary">
       {label}
       <button
         onClick={onClear}
-        className="rounded-full p-0.5 hover:bg-primary/20"
+        className="grid h-7 w-7 place-items-center rounded-full hover:bg-primary/20"
         aria-label="Remove filter"
       >
-        <X className="h-3 w-3" />
+        <X className="h-3.5 w-3.5" />
       </button>
     </span>
   );
@@ -529,17 +529,17 @@ function MiniCalendar({
               disabled={!has}
               title={has ? `${count} entries` : "No entries"}
               className={cn(
-                "relative aspect-square rounded-md text-[11px] font-medium tabular-nums transition-all",
+                "relative grid min-h-11 place-items-center rounded-md text-xs font-medium tabular-nums transition-all",
                 isSel
                   ? "bg-primary text-primary-foreground shadow-sm scale-105"
                   : has
                     ? "bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer"
-                    : "bg-muted/50 text-muted-foreground/40 cursor-not-allowed",
+                    : "bg-muted/40 text-muted-foreground/40 cursor-not-allowed",
               )}
             >
               {d}
               {has && !isSel && (
-                <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-primary" />
+                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-primary" />
               )}
             </button>
           );
@@ -548,7 +548,7 @@ function MiniCalendar({
       {selectedDay !== null && (
         <button
           onClick={() => onSelectDay(selectedDay)}
-          className="mt-3 w-full text-center text-xs text-muted-foreground hover:text-primary"
+          className="mt-3 grid min-h-10 w-full place-items-center rounded-md text-xs text-muted-foreground hover:bg-muted hover:text-primary"
         >
           Clear day filter
         </button>
@@ -615,20 +615,20 @@ function GridView({
               </div>
             </div>
 
-            <ul className="space-y-3.5">
+            <ul className="space-y-3">
               {days.map((day) => (
                 <li key={day} className="flex gap-3">
-                  <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-xs font-semibold text-primary tabular-nums">
+                  <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-sm font-semibold text-primary tabular-nums">
                     {day}
                   </span>
-                  <div className="flex-1 space-y-1.5">
+                  <div className="flex-1 space-y-1">
                     {dMap.get(day)!.map((e, i) => (
                       <button
                         key={i}
                         onClick={() => onOpen(e)}
-                        className="group/link flex w-full items-start gap-1.5 text-left text-sm leading-snug text-foreground hover:text-primary transition-colors"
+                        className="group/link flex w-full min-h-10 items-start gap-2 rounded-md py-1.5 px-1 -mx-1 text-left text-sm leading-snug text-foreground hover:bg-muted/50 hover:text-primary transition-colors"
                       >
-                        <span className="flex-1">{highlightText(e.text, query)}</span>
+                        <span className="min-w-0 flex-1 break-words">{highlightText(e.text, query)}</span>
                         <RegionDot region={e.region} />
                       </button>
                     ))}
@@ -664,15 +664,15 @@ function TimelineView({
               className="block w-full text-left"
             >
               <Card className="p-4 transition-shadow hover:shadow-elegant">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="mb-1 flex flex-wrap items-center gap-2">
                   <Badge variant="secondary" className="text-[10px]">
                     {f.month.num}. {f.month.name}
                   </Badge>
                   <RegionBadge region={f.region} />
                 </div>
-                <span className="inline-flex items-start gap-1.5 text-sm font-medium">
+                <span className="flex items-start gap-1.5 text-sm font-medium">
                   <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
-                  {f.text}
+                  <span className="min-w-0 flex-1 break-words">{f.text}</span>
                 </span>
               </Card>
             </button>
@@ -724,7 +724,7 @@ function EntryDialog({
         {entry && (
           <>
             <DialogHeader>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="secondary" className="text-[10px]">
                   Day {entry.day}
                 </Badge>
@@ -733,7 +733,7 @@ function EntryDialog({
                 </Badge>
                 <RegionBadge region={entry.region} />
               </div>
-              <DialogTitle className="mt-3 font-display text-2xl leading-tight">
+              <DialogTitle className="mt-3 font-display text-xl sm:text-2xl leading-tight break-words pr-8">
                 {entry.text}
               </DialogTitle>
               <DialogDescription>
