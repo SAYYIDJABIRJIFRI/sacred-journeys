@@ -548,7 +548,7 @@ function MiniCalendar({
       {selectedDay !== null && (
         <button
           onClick={() => onSelectDay(selectedDay)}
-          className="mt-3 w-full text-center text-xs text-muted-foreground hover:text-primary"
+          className="mt-3 grid min-h-10 w-full place-items-center rounded-md text-xs text-muted-foreground hover:bg-muted hover:text-primary"
         >
           Clear day filter
         </button>
