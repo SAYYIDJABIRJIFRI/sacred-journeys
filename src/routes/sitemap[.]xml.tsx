@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { sanityClient } from "@/lib/sanity";
 
-const ROUTES = ["/", "/about", "/blog", "/contact", "/privacy"];
+const ROUTES = ["/", "/about", "/blog", "/uroos", "/maqam", "/contact", "/privacy"];
 const BASE = "https://ziyarath.com";
 
 type SitemapPost = { slug: string; publishedAt?: string; _updatedAt?: string };
