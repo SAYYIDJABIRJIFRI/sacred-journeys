@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
+import { z } from "zod";
 import { useMemo, useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import {
@@ -29,10 +31,37 @@ import {
   Clock,
   Sparkles,
   X,
+  Compass,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+const REGIONS: MaqamRegion[] = ["kerala", "india", "middle-east", "worldwide"];
+const CATEGORIES: MaqamCategory[] = [
+  "sufi",
+  "scholar",
+  "sahaba",
+  "shaheed",
+  "prophet",
+];
+
+const regionEnum = z.enum(["all", "kerala", "india", "middle-east", "worldwide"]);
+const categoryEnum = z.enum([
+  "all",
+  "sufi",
+  "scholar",
+  "sahaba",
+  "shaheed",
+  "prophet",
+]);
+
+const maqamSearchSchema = z.object({
+  q: fallback(z.string(), "").default(""),
+  region: fallback(regionEnum, "all").default("all"),
+  category: fallback(categoryEnum, "all").default("all"),
+});
+
 export const Route = createFileRoute("/maqam")({
+  validateSearch: zodValidator(maqamSearchSchema),
   head: () => ({
     meta: [
       { title: "Maqam Directory — Ziyarath" },
@@ -71,20 +100,20 @@ export const Route = createFileRoute("/maqam")({
   component: MaqamPage,
 });
 
-const REGIONS: MaqamRegion[] = ["kerala", "india", "middle-east", "worldwide"];
-const CATEGORIES: MaqamCategory[] = [
-  "sufi",
-  "scholar",
-  "sahaba",
-  "shaheed",
-  "prophet",
-];
-
 function MaqamPage() {
-  const [query, setQuery] = useState("");
-  const [region, setRegion] = useState<MaqamRegion | "all">("all");
-  const [category, setCategory] = useState<MaqamCategory | "all">("all");
+  const { q: query, region, category } = Route.useSearch();
+  const navigate = useNavigate({ from: "/maqam" });
   const [selected, setSelected] = useState<Maqam | null>(null);
+
+  type MaqamSearch = z.infer<typeof maqamSearchSchema>;
+  const setQuery = (v: string) =>
+    navigate({ search: (prev: MaqamSearch) => ({ ...prev, q: v }), replace: true });
+  const setRegion = (v: MaqamRegion | "all") =>
+    navigate({ search: (prev: MaqamSearch) => ({ ...prev, region: v }), replace: true });
+  const setCategory = (v: MaqamCategory | "all") =>
+    navigate({ search: (prev: MaqamSearch) => ({ ...prev, category: v }), replace: true });
+  const clearAll = () =>
+    navigate({ search: { q: "", region: "all", category: "all" }, replace: true });
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -112,6 +141,48 @@ function MaqamPage() {
   }, []);
 
   const hasFilters = region !== "all" || category !== "all" || query.length > 0;
+
+  // Suggestions for empty state: relax one filter at a time
+  const suggestions = useMemo(() => {
+    if (filtered.length > 0) return null;
+    const q = query.trim().toLowerCase();
+    const matchesQuery = (m: Maqam) =>
+      !q ||
+      [m.name, m.malayalamName, m.location, m.city, m.country, m.description]
+        .filter(Boolean)
+        .some((v) => v!.toLowerCase().includes(q));
+
+    const withoutRegion =
+      region === "all"
+        ? []
+        : MAQAMS.filter(
+            (m) =>
+              matchesQuery(m) && (category === "all" || m.category === category),
+          );
+    const withoutCategory =
+      category === "all"
+        ? []
+        : MAQAMS.filter(
+            (m) => matchesQuery(m) && (region === "all" || m.region === region),
+          );
+    const withoutQuery =
+      q.length === 0
+        ? []
+        : MAQAMS.filter(
+            (m) =>
+              (region === "all" || m.region === region) &&
+              (category === "all" || m.category === category),
+          );
+
+    return {
+      withoutRegion: withoutRegion.length,
+      withoutCategory: withoutCategory.length,
+      withoutQuery: withoutQuery.length,
+      popular: MAQAMS.slice(0, 4),
+    };
+  }, [filtered.length, query, region, category]);
+
+
 
   return (
     <SiteLayout>
@@ -180,14 +251,10 @@ function MaqamPage() {
               ))}
               {hasFilters && (
                 <button
-                  onClick={() => {
-                    setQuery("");
-                    setRegion("all");
-                    setCategory("all");
-                  }}
+                  onClick={clearAll}
                   className="inline-flex min-h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-xs font-medium text-muted-foreground hover:bg-accent"
                 >
-                  <X className="h-3 w-3" /> Clear
+                  <X className="h-3 w-3" /> Clear all
                 </button>
               )}
             </div>
@@ -201,10 +268,69 @@ function MaqamPage() {
         </div>
 
         {filtered.length === 0 ? (
-          <Card className="p-10 text-center">
-            <p className="text-muted-foreground">
-              No maqams match these filters. Try clearing them.
-            </p>
+          <Card className="p-8 sm:p-10">
+            <div className="flex flex-col items-center text-center">
+              <div className="rounded-full bg-muted p-3">
+                <Compass className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <h2 className="mt-4 font-display text-xl font-semibold">
+                No maqams match your filters
+              </h2>
+              <p className="mt-2 max-w-md text-sm text-muted-foreground">
+                {query
+                  ? <>We couldn't find anything for &ldquo;<span className="font-medium text-foreground">{query}</span>&rdquo; with the current filters.</>
+                  : "Try relaxing a filter or exploring a different region."}
+              </p>
+
+              <div className="mt-5 flex flex-wrap justify-center gap-2">
+                {suggestions && suggestions.withoutQuery > 0 && (
+                  <Button size="sm" variant="outline" onClick={() => setQuery("")}>
+                    Clear search ({suggestions.withoutQuery})
+                  </Button>
+                )}
+                {suggestions && suggestions.withoutRegion > 0 && region !== "all" && (
+                  <Button size="sm" variant="outline" onClick={() => setRegion("all")}>
+                    All regions ({suggestions.withoutRegion})
+                  </Button>
+                )}
+                {suggestions && suggestions.withoutCategory > 0 && category !== "all" && (
+                  <Button size="sm" variant="outline" onClick={() => setCategory("all")}>
+                    All types ({suggestions.withoutCategory})
+                  </Button>
+                )}
+                <Button size="sm" onClick={clearAll}>
+                  Reset filters
+                </Button>
+              </div>
+
+              {suggestions && (
+                <div className="mt-8 w-full border-t border-border pt-6">
+                  <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Popular maqams
+                  </div>
+                  <div className="grid gap-2 text-left sm:grid-cols-2">
+                    {suggestions.popular.map((m) => (
+                      <Link
+                        key={m.id}
+                        to="/maqam/$id"
+                        params={{ id: m.id }}
+                        className="group flex items-start gap-3 rounded-lg border border-border p-3 hover:bg-accent"
+                      >
+                        <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                        <div className="min-w-0">
+                          <div className="truncate font-medium group-hover:underline">
+                            {m.name}
+                          </div>
+                          <div className="truncate text-xs text-muted-foreground">
+                            {m.city}, {m.country}
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </Card>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
