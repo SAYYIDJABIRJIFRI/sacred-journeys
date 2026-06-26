@@ -105,12 +105,13 @@ function MaqamPage() {
   const navigate = useNavigate({ from: "/maqam" });
   const [selected, setSelected] = useState<Maqam | null>(null);
 
+  type MaqamSearch = z.infer<typeof maqamSearchSchema>;
   const setQuery = (v: string) =>
-    navigate({ search: (prev) => ({ ...prev, q: v }), replace: true });
+    navigate({ search: (prev: MaqamSearch) => ({ ...prev, q: v }), replace: true });
   const setRegion = (v: MaqamRegion | "all") =>
-    navigate({ search: (prev) => ({ ...prev, region: v }), replace: true });
+    navigate({ search: (prev: MaqamSearch) => ({ ...prev, region: v }), replace: true });
   const setCategory = (v: MaqamCategory | "all") =>
-    navigate({ search: (prev) => ({ ...prev, category: v }), replace: true });
+    navigate({ search: (prev: MaqamSearch) => ({ ...prev, category: v }), replace: true });
   const clearAll = () =>
     navigate({ search: { q: "", region: "all", category: "all" }, replace: true });
 
