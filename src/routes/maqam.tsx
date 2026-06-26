@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import {
@@ -336,7 +336,9 @@ function MaqamPage() {
                     </Button>
                   </a>
                 )}
-                <Button onClick={() => setSelected(null)}>Close</Button>
+                <Link to="/maqam/$id" params={{ id: selected.id }}>
+                  <Button>View full page</Button>
+                </Link>
               </DialogFooter>
             </>
           )}
