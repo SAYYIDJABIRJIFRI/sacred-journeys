@@ -122,8 +122,8 @@ export const Route = createFileRoute("/maqam/$id")({
 });
 
 function MaqamDetailPage() {
-  const { maqam: m } = Route.useLoaderData();
-  const related = MAQAMS.filter(
+  const { maqam: m } = Route.useLoaderData() as { maqam: Maqam };
+  const related: Maqam[] = MAQAMS.filter(
     (x) => x.id !== m.id && (x.region === m.region || x.category === m.category),
   ).slice(0, 3);
 

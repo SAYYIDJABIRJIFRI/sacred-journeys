@@ -17,6 +17,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
+import { Route as MaqamIdRouteImport } from './routes/maqam.$id'
 import { Route as BlogSlugRouteImport } from './routes/blog_.$slug'
 
 const UroosRoute = UroosRouteImport.update({
@@ -59,6 +60,11 @@ const BlogIndexRoute = BlogIndexRouteImport.update({
   path: '/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MaqamIdRoute = MaqamIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => MaqamRoute,
+} as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/blog_/$slug',
   path: '/blog/$slug',
@@ -69,22 +75,24 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
-  '/maqam': typeof MaqamRoute
+  '/maqam': typeof MaqamRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/uroos': typeof UroosRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/maqam/$id': typeof MaqamIdRoute
   '/blog/': typeof BlogIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
-  '/maqam': typeof MaqamRoute
+  '/maqam': typeof MaqamRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/uroos': typeof UroosRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/maqam/$id': typeof MaqamIdRoute
   '/blog': typeof BlogIndexRoute
 }
 export interface FileRoutesById {
@@ -92,11 +100,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
-  '/maqam': typeof MaqamRoute
+  '/maqam': typeof MaqamRouteWithChildren
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/uroos': typeof UroosRoute
   '/blog_/$slug': typeof BlogSlugRoute
+  '/maqam/$id': typeof MaqamIdRoute
   '/blog/': typeof BlogIndexRoute
 }
 export interface FileRouteTypes {
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/uroos'
     | '/blog/$slug'
+    | '/maqam/$id'
     | '/blog/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/uroos'
     | '/blog/$slug'
+    | '/maqam/$id'
     | '/blog'
   id:
     | '__root__'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/uroos'
     | '/blog_/$slug'
+    | '/maqam/$id'
     | '/blog/'
   fileRoutesById: FileRoutesById
 }
@@ -139,7 +151,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
-  MaqamRoute: typeof MaqamRoute
+  MaqamRoute: typeof MaqamRouteWithChildren
   PrivacyRoute: typeof PrivacyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   UroosRoute: typeof UroosRoute
@@ -205,6 +217,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/maqam/$id': {
+      id: '/maqam/$id'
+      path: '/$id'
+      fullPath: '/maqam/$id'
+      preLoaderRoute: typeof MaqamIdRouteImport
+      parentRoute: typeof MaqamRoute
+    }
     '/blog_/$slug': {
       id: '/blog_/$slug'
       path: '/blog/$slug'
@@ -215,11 +234,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface MaqamRouteChildren {
+  MaqamIdRoute: typeof MaqamIdRoute
+}
+
+const MaqamRouteChildren: MaqamRouteChildren = {
+  MaqamIdRoute: MaqamIdRoute,
+}
+
+const MaqamRouteWithChildren = MaqamRoute._addFileChildren(MaqamRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
-  MaqamRoute: MaqamRoute,
+  MaqamRoute: MaqamRouteWithChildren,
   PrivacyRoute: PrivacyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   UroosRoute: UroosRoute,
@@ -229,13 +258,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
