@@ -251,14 +251,10 @@ function MaqamPage() {
               ))}
               {hasFilters && (
                 <button
-                  onClick={() => {
-                    setQuery("");
-                    setRegion("all");
-                    setCategory("all");
-                  }}
+                  onClick={clearAll}
                   className="inline-flex min-h-9 items-center gap-1 rounded-full border border-border bg-card px-3 text-xs font-medium text-muted-foreground hover:bg-accent"
                 >
-                  <X className="h-3 w-3" /> Clear
+                  <X className="h-3 w-3" /> Clear all
                 </button>
               )}
             </div>
@@ -272,10 +268,69 @@ function MaqamPage() {
         </div>
 
         {filtered.length === 0 ? (
-          <Card className="p-10 text-center">
-            <p className="text-muted-foreground">
-              No maqams match these filters. Try clearing them.
-            </p>
+          <Card className="p-8 sm:p-10">
+            <div className="flex flex-col items-center text-center">
+              <div className="rounded-full bg-muted p-3">
+                <Compass className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <h2 className="mt-4 font-display text-xl font-semibold">
+                No maqams match your filters
+              </h2>
+              <p className="mt-2 max-w-md text-sm text-muted-foreground">
+                {query
+                  ? <>We couldn't find anything for &ldquo;<span className="font-medium text-foreground">{query}</span>&rdquo; with the current filters.</>
+                  : "Try relaxing a filter or exploring a different region."}
+              </p>
+
+              <div className="mt-5 flex flex-wrap justify-center gap-2">
+                {suggestions && suggestions.withoutQuery > 0 && (
+                  <Button size="sm" variant="outline" onClick={() => setQuery("")}>
+                    Clear search ({suggestions.withoutQuery})
+                  </Button>
+                )}
+                {suggestions && suggestions.withoutRegion > 0 && region !== "all" && (
+                  <Button size="sm" variant="outline" onClick={() => setRegion("all")}>
+                    All regions ({suggestions.withoutRegion})
+                  </Button>
+                )}
+                {suggestions && suggestions.withoutCategory > 0 && category !== "all" && (
+                  <Button size="sm" variant="outline" onClick={() => setCategory("all")}>
+                    All types ({suggestions.withoutCategory})
+                  </Button>
+                )}
+                <Button size="sm" onClick={clearAll}>
+                  Reset filters
+                </Button>
+              </div>
+
+              {suggestions && (
+                <div className="mt-8 w-full border-t border-border pt-6">
+                  <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Popular maqams
+                  </div>
+                  <div className="grid gap-2 text-left sm:grid-cols-2">
+                    {suggestions.popular.map((m) => (
+                      <Link
+                        key={m.id}
+                        to="/maqam/$id"
+                        params={{ id: m.id }}
+                        className="group flex items-start gap-3 rounded-lg border border-border p-3 hover:bg-accent"
+                      >
+                        <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                        <div className="min-w-0">
+                          <div className="truncate font-medium group-hover:underline">
+                            {m.name}
+                          </div>
+                          <div className="truncate text-xs text-muted-foreground">
+                            {m.city}, {m.country}
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </Card>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
