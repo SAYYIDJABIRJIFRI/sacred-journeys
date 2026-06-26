@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
+import { z } from "zod";
 import { useMemo, useState } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import {
@@ -29,10 +31,37 @@ import {
   Clock,
   Sparkles,
   X,
+  Compass,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+const REGIONS: MaqamRegion[] = ["kerala", "india", "middle-east", "worldwide"];
+const CATEGORIES: MaqamCategory[] = [
+  "sufi",
+  "scholar",
+  "sahaba",
+  "shaheed",
+  "prophet",
+];
+
+const regionEnum = z.enum(["all", "kerala", "india", "middle-east", "worldwide"]);
+const categoryEnum = z.enum([
+  "all",
+  "sufi",
+  "scholar",
+  "sahaba",
+  "shaheed",
+  "prophet",
+]);
+
+const maqamSearchSchema = z.object({
+  q: fallback(z.string(), "").default(""),
+  region: fallback(regionEnum, "all").default("all"),
+  category: fallback(categoryEnum, "all").default("all"),
+});
+
 export const Route = createFileRoute("/maqam")({
+  validateSearch: zodValidator(maqamSearchSchema),
   head: () => ({
     meta: [
       { title: "Maqam Directory — Ziyarath" },
@@ -71,20 +100,19 @@ export const Route = createFileRoute("/maqam")({
   component: MaqamPage,
 });
 
-const REGIONS: MaqamRegion[] = ["kerala", "india", "middle-east", "worldwide"];
-const CATEGORIES: MaqamCategory[] = [
-  "sufi",
-  "scholar",
-  "sahaba",
-  "shaheed",
-  "prophet",
-];
-
 function MaqamPage() {
-  const [query, setQuery] = useState("");
-  const [region, setRegion] = useState<MaqamRegion | "all">("all");
-  const [category, setCategory] = useState<MaqamCategory | "all">("all");
+  const { q: query, region, category } = Route.useSearch();
+  const navigate = useNavigate({ from: "/maqam" });
   const [selected, setSelected] = useState<Maqam | null>(null);
+
+  const setQuery = (v: string) =>
+    navigate({ search: (prev) => ({ ...prev, q: v }), replace: true });
+  const setRegion = (v: MaqamRegion | "all") =>
+    navigate({ search: (prev) => ({ ...prev, region: v }), replace: true });
+  const setCategory = (v: MaqamCategory | "all") =>
+    navigate({ search: (prev) => ({ ...prev, category: v }), replace: true });
+  const clearAll = () =>
+    navigate({ search: { q: "", region: "all", category: "all" }, replace: true });
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -112,6 +140,48 @@ function MaqamPage() {
   }, []);
 
   const hasFilters = region !== "all" || category !== "all" || query.length > 0;
+
+  // Suggestions for empty state: relax one filter at a time
+  const suggestions = useMemo(() => {
+    if (filtered.length > 0) return null;
+    const q = query.trim().toLowerCase();
+    const matchesQuery = (m: Maqam) =>
+      !q ||
+      [m.name, m.malayalamName, m.location, m.city, m.country, m.description]
+        .filter(Boolean)
+        .some((v) => v!.toLowerCase().includes(q));
+
+    const withoutRegion =
+      region === "all"
+        ? []
+        : MAQAMS.filter(
+            (m) =>
+              matchesQuery(m) && (category === "all" || m.category === category),
+          );
+    const withoutCategory =
+      category === "all"
+        ? []
+        : MAQAMS.filter(
+            (m) => matchesQuery(m) && (region === "all" || m.region === region),
+          );
+    const withoutQuery =
+      q.length === 0
+        ? []
+        : MAQAMS.filter(
+            (m) =>
+              (region === "all" || m.region === region) &&
+              (category === "all" || m.category === category),
+          );
+
+    return {
+      withoutRegion: withoutRegion.length,
+      withoutCategory: withoutCategory.length,
+      withoutQuery: withoutQuery.length,
+      popular: MAQAMS.slice(0, 4),
+    };
+  }, [filtered.length, query, region, category]);
+
+
 
   return (
     <SiteLayout>
