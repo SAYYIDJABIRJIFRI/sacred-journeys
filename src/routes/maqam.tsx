@@ -267,7 +267,9 @@ function MaqamPage() {
 
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-4 text-sm text-muted-foreground">
-          Showing {filtered.length} of {MAQAMS.length} maqams
+          {filtered.length > PAGE_SIZE
+            ? `Showing ${start + 1}–${Math.min(start + PAGE_SIZE, filtered.length)} of ${filtered.length} maqams`
+            : `Showing ${filtered.length} of ${MAQAMS.length} maqams`}
         </div>
 
         {filtered.length === 0 ? (
