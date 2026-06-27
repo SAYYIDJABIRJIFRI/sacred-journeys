@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import {
   MAQAMS,
@@ -16,24 +16,16 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
   Search,
   MapPin,
-  ExternalLink,
-  Building2,
   Clock,
   Sparkles,
   X,
   Compass,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+
 
 const REGIONS: MaqamRegion[] = ["kerala", "india", "middle-east", "worldwide"];
 const CATEGORIES: MaqamCategory[] = [
@@ -103,7 +95,7 @@ export const Route = createFileRoute("/maqam")({
 function MaqamPage() {
   const { q: query, region, category } = Route.useSearch();
   const navigate = useNavigate({ from: "/maqam" });
-  const [selected, setSelected] = useState<Maqam | null>(null);
+  
 
   type MaqamSearch = z.infer<typeof maqamSearchSchema>;
   const setQuery = (v: string) =>
@@ -335,15 +327,16 @@ function MaqamPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((m) => (
-              <button
+              <Link
                 key={m.id}
-                onClick={() => setSelected(m)}
+                to="/maqam/$id"
+                params={{ id: m.id }}
                 className="text-left"
               >
                 <Card className="group h-full p-5 transition-all hover:-translate-y-0.5 hover:shadow-elegant">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <h3 className="font-display text-lg font-semibold leading-snug">
+                      <h3 className="font-display text-lg font-semibold leading-snug group-hover:underline">
                         {m.name}
                       </h3>
                       {m.malayalamName && (
@@ -378,98 +371,15 @@ function MaqamPage() {
                     )}
                   </div>
                 </Card>
-              </button>
+              </Link>
             ))}
           </div>
+
         )}
       </section>
 
-      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="max-w-lg">
-          {selected && (
-            <>
-              <DialogHeader>
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="secondary">
-                    {CATEGORY_LABELS[selected.category]}
-                  </Badge>
-                  <Badge variant="outline">
-                    {REGION_LABELS[selected.region]}
-                  </Badge>
-                  {selected.era && (
-                    <Badge variant="outline" className="gap-1">
-                      <Clock className="h-3 w-3" /> {selected.era}
-                    </Badge>
-                  )}
-                </div>
-                <DialogTitle className="break-words font-display text-xl sm:text-2xl">
-                  {selected.name}
-                </DialogTitle>
-                {selected.malayalamName && (
-                  <DialogDescription className="text-base">
-                    {selected.malayalamName}
-                  </DialogDescription>
-                )}
-              </DialogHeader>
 
-              <div className="space-y-4 text-sm">
-                <div className="flex items-start gap-2 text-muted-foreground">
-                  <Building2 className="mt-0.5 h-4 w-4 shrink-0" />
-                  <div className="break-words">
-                    <div className="text-foreground">{selected.location}</div>
-                    <div>
-                      {selected.city}, {selected.country}
-                    </div>
-                  </div>
-                </div>
 
-                <p className="leading-relaxed text-foreground/90">
-                  {selected.description}
-                </p>
-
-                {selected.significance && (
-                  <div className="rounded-lg border border-border bg-muted/40 p-3">
-                    <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      Significance
-                    </div>
-                    <p className="text-foreground/90">{selected.significance}</p>
-                  </div>
-                )}
-
-                {selected.bestTimeToVisit && (
-                  <div className="flex items-start gap-2">
-                    <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <div>
-                      <span className="font-medium">Best time: </span>
-                      <span className="text-muted-foreground">
-                        {selected.bestTimeToVisit}
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <DialogFooter className="gap-2 sm:gap-2">
-                {selected.sourceUrl && (
-                  <a
-                    href={selected.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex"
-                  >
-                    <Button variant="outline" className="gap-2">
-                      <ExternalLink className="h-4 w-4" /> Source
-                    </Button>
-                  </a>
-                )}
-                <Link to="/maqam/$id" params={{ id: selected.id }}>
-                  <Button>View full page</Button>
-                </Link>
-              </DialogFooter>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
     </SiteLayout>
   );
 }
