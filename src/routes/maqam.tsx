@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
-import { useMemo } from "react";
+import { useMemo, Suspense } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import {
   MAQAMS,
@@ -15,6 +15,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Search,
   MapPin,
@@ -22,6 +23,7 @@ import {
   Sparkles,
   X,
   Compass,
+  ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
