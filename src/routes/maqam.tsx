@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import {
   MAQAMS,
@@ -16,24 +16,14 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
   Search,
   MapPin,
-  ExternalLink,
-  Building2,
   Clock,
   Sparkles,
   X,
   Compass,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+
 
 const REGIONS: MaqamRegion[] = ["kerala", "india", "middle-east", "worldwide"];
 const CATEGORIES: MaqamCategory[] = [
