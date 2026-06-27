@@ -335,15 +335,16 @@ function MaqamPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((m) => (
-              <button
+              <Link
                 key={m.id}
-                onClick={() => setSelected(m)}
+                to="/maqam/$id"
+                params={{ id: m.id }}
                 className="text-left"
               >
                 <Card className="group h-full p-5 transition-all hover:-translate-y-0.5 hover:shadow-elegant">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <h3 className="font-display text-lg font-semibold leading-snug">
+                      <h3 className="font-display text-lg font-semibold leading-snug group-hover:underline">
                         {m.name}
                       </h3>
                       {m.malayalamName && (
@@ -378,9 +379,10 @@ function MaqamPage() {
                     )}
                   </div>
                 </Card>
-              </button>
+              </Link>
             ))}
           </div>
+
         )}
       </section>
 
