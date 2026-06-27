@@ -93,7 +93,7 @@ export const Route = createFileRoute("/maqam")({
 function MaqamPage() {
   const { q: query, region, category } = Route.useSearch();
   const navigate = useNavigate({ from: "/maqam" });
-  const [selected, setSelected] = useState<Maqam | null>(null);
+  
 
   type MaqamSearch = z.infer<typeof maqamSearchSchema>;
   const setQuery = (v: string) =>
