@@ -24,6 +24,8 @@ import {
   X,
   Compass,
   ArrowRight,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -48,10 +50,13 @@ const categoryEnum = z.enum([
   "prophet",
 ]);
 
+const PAGE_SIZE = 6;
+
 const maqamSearchSchema = z.object({
   q: fallback(z.string(), "").default(""),
   region: fallback(regionEnum, "all").default("all"),
   category: fallback(categoryEnum, "all").default("all"),
+  page: fallback(z.number().int().min(1), 1).default(1),
 });
 
 export const Route = createFileRoute("/maqam")({
@@ -95,19 +100,18 @@ export const Route = createFileRoute("/maqam")({
 });
 
 function MaqamPage() {
-  const { q: query, region, category } = Route.useSearch();
+  const { q: query, region, category, page } = Route.useSearch();
   const navigate = useNavigate({ from: "/maqam" });
-  
 
   type MaqamSearch = z.infer<typeof maqamSearchSchema>;
   const setQuery = (v: string) =>
-    navigate({ search: (prev: MaqamSearch) => ({ ...prev, q: v }), replace: true });
+    navigate({ search: (prev: MaqamSearch) => ({ ...prev, q: v, page: 1 }), replace: true });
   const setRegion = (v: MaqamRegion | "all") =>
-    navigate({ search: (prev: MaqamSearch) => ({ ...prev, region: v }), replace: true });
+    navigate({ search: (prev: MaqamSearch) => ({ ...prev, region: v, page: 1 }), replace: true });
   const setCategory = (v: MaqamCategory | "all") =>
-    navigate({ search: (prev: MaqamSearch) => ({ ...prev, category: v }), replace: true });
+    navigate({ search: (prev: MaqamSearch) => ({ ...prev, category: v, page: 1 }), replace: true });
   const clearAll = () =>
-    navigate({ search: { q: "", region: "all", category: "all" }, replace: true });
+    navigate({ search: { q: "", region: "all", category: "all", page: 1 }, replace: true });
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -133,6 +137,11 @@ function MaqamPage() {
     for (const m of MAQAMS) r[m.region] = (r[m.region] ?? 0) + 1;
     return r;
   }, []);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(Math.max(1, page), totalPages);
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const paginated = filtered.slice(start, start + PAGE_SIZE);
 
   const hasFilters = region !== "all" || category !== "all" || query.length > 0;
 
@@ -258,7 +267,9 @@ function MaqamPage() {
 
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-4 text-sm text-muted-foreground">
-          Showing {filtered.length} of {MAQAMS.length} maqams
+          {filtered.length > PAGE_SIZE
+            ? `Showing ${start + 1}–${Math.min(start + PAGE_SIZE, filtered.length)} of ${filtered.length} maqams`
+            : `Showing ${filtered.length} of ${MAQAMS.length} maqams`}
         </div>
 
         {filtered.length === 0 ? (
@@ -327,12 +338,64 @@ function MaqamPage() {
             </div>
           </Card>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((m) => (
-              <MaqamCard key={m.id} maqam={m} />
-            ))}
-          </div>
+          <>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {paginated.map((m) => (
+                <MaqamCard key={m.id} maqam={m} />
+              ))}
+            </div>
 
+            {totalPages > 1 && (
+              <nav
+                aria-label="Maqam pagination"
+                className="mt-12 flex items-center justify-center gap-2"
+              >
+                <Link
+                  to="/maqam"
+                  search={{ q: query, region, category, page: Math.max(1, currentPage - 1) }}
+                  aria-label="Previous page"
+                  aria-disabled={currentPage === 1}
+                  className={`inline-flex h-10 items-center gap-1 rounded-full border border-border bg-card px-4 text-sm font-medium transition-colors hover:bg-primary hover:text-primary-foreground ${
+                    currentPage === 1 ? "pointer-events-none opacity-40" : ""
+                  }`}
+                >
+                  <ChevronLeft className="h-4 w-4" /> Prev
+                </Link>
+
+                {Array.from({ length: totalPages }).map((_, i) => {
+                  const n = i + 1;
+                  const active = n === currentPage;
+                  return (
+                    <Link
+                      key={n}
+                      to="/maqam"
+                      search={{ q: query, region, category, page: n }}
+                      aria-current={active ? "page" : undefined}
+                      className={`grid h-10 w-10 place-items-center rounded-full border text-sm font-semibold transition-colors ${
+                        active
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-card hover:bg-primary/10 hover:text-primary"
+                      }`}
+                    >
+                      {n}
+                    </Link>
+                  );
+                })}
+
+                <Link
+                  to="/maqam"
+                  search={{ q: query, region, category, page: Math.min(totalPages, currentPage + 1) }}
+                  aria-label="Next page"
+                  aria-disabled={currentPage === totalPages}
+                  className={`inline-flex h-10 items-center gap-1 rounded-full border border-border bg-card px-4 text-sm font-medium transition-colors hover:bg-primary hover:text-primary-foreground ${
+                    currentPage === totalPages ? "pointer-events-none opacity-40" : ""
+                  }`}
+                >
+                  Next <ChevronRight className="h-4 w-4" />
+                </Link>
+              </nav>
+            )}
+          </>
         )}
       </section>
 
