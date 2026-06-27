@@ -327,53 +327,9 @@ function MaqamPage() {
             </div>
           </Card>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((m) => (
-              <Link
-                key={m.id}
-                to="/maqam/$id"
-                params={{ id: m.id }}
-                className="text-left"
-              >
-                <Card className="group h-full p-5 transition-all hover:-translate-y-0.5 hover:shadow-elegant">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <h3 className="font-display text-lg font-semibold leading-snug group-hover:underline">
-                        {m.name}
-                      </h3>
-                      {m.malayalamName && (
-                        <p className="mt-0.5 text-sm text-muted-foreground">
-                          {m.malayalamName}
-                        </p>
-                      )}
-                    </div>
-                    <Badge variant="secondary" className="shrink-0">
-                      {CATEGORY_LABELS[m.category]}
-                    </Badge>
-                  </div>
-
-                  <div className="mt-3 flex items-start gap-2 text-sm text-muted-foreground">
-                    <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
-                    <span className="break-words">
-                      {m.city}, {m.country}
-                    </span>
-                  </div>
-
-                  <p className="mt-3 line-clamp-3 text-sm text-foreground/80">
-                    {m.description}
-                  </p>
-
-                  <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
-                    <Badge variant="outline">{REGION_LABELS[m.region]}</Badge>
-                    {m.era && (
-                      <span className="inline-flex items-center gap-1 text-muted-foreground">
-                        <Clock className="h-3 w-3" />
-                        {m.era}
-                      </span>
-                    )}
-                  </div>
-                </Card>
-              </Link>
+              <MaqamCard key={m.id} maqam={m} />
             ))}
           </div>
 
