@@ -50,10 +50,13 @@ const categoryEnum = z.enum([
   "prophet",
 ]);
 
+const PAGE_SIZE = 6;
+
 const maqamSearchSchema = z.object({
   q: fallback(z.string(), "").default(""),
   region: fallback(regionEnum, "all").default("all"),
   category: fallback(categoryEnum, "all").default("all"),
+  page: fallback(z.number().int().min(1), 1).default(1),
 });
 
 export const Route = createFileRoute("/maqam")({
