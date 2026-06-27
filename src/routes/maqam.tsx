@@ -138,6 +138,11 @@ function MaqamPage() {
     return r;
   }, []);
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(Math.max(1, page), totalPages);
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const paginated = filtered.slice(start, start + PAGE_SIZE);
+
   const hasFilters = region !== "all" || category !== "all" || query.length > 0;
 
   // Suggestions for empty state: relax one filter at a time
