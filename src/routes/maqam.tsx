@@ -100,19 +100,18 @@ export const Route = createFileRoute("/maqam")({
 });
 
 function MaqamPage() {
-  const { q: query, region, category } = Route.useSearch();
+  const { q: query, region, category, page } = Route.useSearch();
   const navigate = useNavigate({ from: "/maqam" });
-  
 
   type MaqamSearch = z.infer<typeof maqamSearchSchema>;
   const setQuery = (v: string) =>
-    navigate({ search: (prev: MaqamSearch) => ({ ...prev, q: v }), replace: true });
+    navigate({ search: (prev: MaqamSearch) => ({ ...prev, q: v, page: 1 }), replace: true });
   const setRegion = (v: MaqamRegion | "all") =>
-    navigate({ search: (prev: MaqamSearch) => ({ ...prev, region: v }), replace: true });
+    navigate({ search: (prev: MaqamSearch) => ({ ...prev, region: v, page: 1 }), replace: true });
   const setCategory = (v: MaqamCategory | "all") =>
-    navigate({ search: (prev: MaqamSearch) => ({ ...prev, category: v }), replace: true });
+    navigate({ search: (prev: MaqamSearch) => ({ ...prev, category: v, page: 1 }), replace: true });
   const clearAll = () =>
-    navigate({ search: { q: "", region: "all", category: "all" }, replace: true });
+    navigate({ search: { q: "", region: "all", category: "all", page: 1 }, replace: true });
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
