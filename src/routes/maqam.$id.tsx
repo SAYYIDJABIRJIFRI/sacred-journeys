@@ -9,6 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -18,12 +19,30 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
   ArrowLeft,
   Building2,
+  Bus,
   Clock,
+  Contact,
   ExternalLink,
+  Flower2,
+  Heart,
+  History,
+  Landmark,
   MapPin,
+  Navigation,
+  Palette,
+  Phone,
+  Plane,
   Sparkles,
+  Train,
+  Wifi,
 } from "lucide-react";
 
 function findMaqam(id: string): Maqam | undefined {
@@ -69,9 +88,15 @@ export const Route = createFileRoute("/maqam/$id")({
               "@type": "PostalAddress",
               addressLocality: m.city,
               addressCountry: m.country,
+              ...(m.addressDetail
+                ? { streetAddress: m.addressDetail }
+                : {}),
             },
             additionalType: "https://schema.org/LandmarksOrHistoricalBuildings",
             isAccessibleForFree: true,
+            ...(m.contactInfo?.phone
+              ? { telephone: m.contactInfo.phone }
+              : {}),
             ...(m.sourceUrl ? { sameAs: [m.sourceUrl] } : {}),
           }),
         },
@@ -127,97 +152,391 @@ function MaqamDetailPage() {
     (x) => x.id !== m.id && (x.region === m.region || x.category === m.category),
   ).slice(0, 3);
 
+  const mapQuery = encodeURIComponent(
+    `${m.name} ${m.city} ${m.country}`,
+  );
+
   return (
     <SiteLayout>
-      <article className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-        <Breadcrumb className="mb-6">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link to="/">Home</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link to="/maqam">Maqam</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage className="line-clamp-1">{m.name}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+      {/* Hero image area */}
+      <div className="relative w-full overflow-hidden bg-gradient-to-b from-primary/10 to-background">
+        <div className="pattern-geometric absolute inset-0 opacity-40" />
+        <div className="relative mx-auto max-w-5xl px-4 pb-8 pt-10 sm:px-6 sm:pb-12 sm:pt-14 lg:px-8">
+          <Breadcrumb className="mb-6">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link to="/">Home</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link to="/maqam">Maqam</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="line-clamp-1">{m.name}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="secondary">{CATEGORY_LABELS[m.category]}</Badge>
-          <Badge variant="outline">{REGION_LABELS[m.region]}</Badge>
-          {m.era && (
-            <Badge variant="outline" className="gap-1">
-              <Clock className="h-3 w-3" /> {m.era}
-            </Badge>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="secondary">{CATEGORY_LABELS[m.category]}</Badge>
+            <Badge variant="outline">{REGION_LABELS[m.region]}</Badge>
+            {m.era && (
+              <Badge variant="outline" className="gap-1">
+                <Clock className="h-3 w-3" /> {m.era}
+              </Badge>
+            )}
+          </div>
+
+          <h1 className="mt-4 font-display text-3xl font-semibold tracking-tight sm:text-5xl">
+            {m.name}
+          </h1>
+          {m.malayalamName && (
+            <p className="mt-2 text-lg text-muted-foreground sm:text-xl">
+              {m.malayalamName}
+            </p>
           )}
         </div>
+      </div>
 
-        <h1 className="mt-4 font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-          {m.name}
-        </h1>
-        {m.malayalamName && (
-          <p className="mt-2 text-lg text-muted-foreground">{m.malayalamName}</p>
-        )}
-
-        <div className="mt-6 space-y-3 text-sm">
-          <div className="flex items-start gap-2 text-muted-foreground">
-            <Building2 className="mt-0.5 h-4 w-4 shrink-0" />
-            <div className="break-words">
-              <div className="text-foreground">{m.location}</div>
+      <article className="mx-auto max-w-5xl px-4 pb-16 sm:px-6 lg:px-8">
+        {/* Quick info cards */}
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Card className="p-4">
+            <div className="flex items-start gap-3">
+              <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
               <div>
-                {m.city}, {m.country}
+                <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Location
+                </div>
+                <div className="mt-1 text-sm font-medium">{m.city}</div>
+                <div className="text-xs text-muted-foreground">{m.country}</div>
               </div>
             </div>
-          </div>
-          <div className="flex items-start gap-2 text-muted-foreground">
-            <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
-            <a
-              className="text-primary hover:underline"
-              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                `${m.name} ${m.city} ${m.country}`,
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View on Google Maps
-            </a>
-          </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-start gap-3">
+              <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Best Time
+                </div>
+                <div className="mt-1 text-sm font-medium">
+                  {m.bestTimeToVisit || "Year round"}
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-start gap-3">
+              <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Type
+                </div>
+                <div className="mt-1 text-sm font-medium">
+                  {CATEGORY_LABELS[m.category]}
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-start gap-3">
+              <History className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Era
+                </div>
+                <div className="mt-1 text-sm font-medium">{m.era || "Ancient"}</div>
+              </div>
+            </div>
+          </Card>
         </div>
 
-        <p className="mt-8 text-base leading-relaxed text-foreground/90 sm:text-lg">
-          {m.description}
-        </p>
-
-        {m.significance && (
-          <Card className="mt-6 p-5">
-            <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Significance
-            </div>
-            <p className="mt-2 leading-relaxed text-foreground/90">
-              {m.significance}
+        <div className="mt-10 grid gap-10 lg:grid-cols-3">
+          {/* Main content */}
+          <div className="lg:col-span-2">
+            <p className="text-base leading-relaxed text-foreground/90 sm:text-lg">
+              {m.description}
             </p>
-          </Card>
-        )}
 
-        {m.bestTimeToVisit && (
-          <div className="mt-6 flex items-start gap-2 rounded-lg border border-border bg-muted/40 p-4">
-            <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-            <div className="text-sm">
-              <span className="font-semibold">Best time to visit: </span>
-              <span className="text-muted-foreground">{m.bestTimeToVisit}</span>
-            </div>
+            {m.significance && (
+              <Card className="mt-6 border-l-4 border-l-primary p-5">
+                <div className="flex items-start gap-3">
+                  <Heart className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Significance
+                    </div>
+                    <p className="mt-2 leading-relaxed text-foreground/90">
+                      {m.significance}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {m.history && (
+              <section className="mt-10">
+                <h2 className="flex items-center gap-2 font-display text-xl font-semibold sm:text-2xl">
+                  <History className="h-5 w-5 text-primary" />
+                  History
+                </h2>
+                <p className="mt-3 leading-relaxed text-foreground/85">
+                  {m.history}
+                </p>
+              </section>
+            )}
+
+            {m.architecture && (
+              <section className="mt-10">
+                <h2 className="flex items-center gap-2 font-display text-xl font-semibold sm:text-2xl">
+                  <Palette className="h-5 w-5 text-primary" />
+                  Architecture
+                </h2>
+                <p className="mt-3 leading-relaxed text-foreground/85">
+                  {m.architecture}
+                </p>
+              </section>
+            )}
+
+            {/* Visiting Hours */}
+            {m.visitingHours && m.visitingHours.length > 0 && (
+              <section className="mt-10">
+                <h2 className="flex items-center gap-2 font-display text-xl font-semibold sm:text-2xl">
+                  <Clock className="h-5 w-5 text-primary" />
+                  Timings
+                </h2>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  {m.visitingHours.map((vh, i) => (
+                    <Card key={i} className="p-4">
+                      <div className="text-sm font-semibold">{vh.label}</div>
+                      <div className="mt-1 text-sm text-muted-foreground">
+                        {vh.hours}
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Nerchaa */}
+            {m.nerchaa && m.nerchaa.length > 0 && (
+              <section className="mt-10">
+                <h2 className="flex items-center gap-2 font-display text-xl font-semibold sm:text-2xl">
+                  <Flower2 className="h-5 w-5 text-primary" />
+                  Nercha & Offerings
+                </h2>
+                <div className="mt-4 space-y-4">
+                  {m.nerchaa.map((n, i) => (
+                    <Card key={i} className="p-5">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-display font-semibold">
+                          {n.title}
+                        </span>
+                        {n.month && (
+                          <Badge variant="secondary" className="text-xs">
+                            {n.month}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="mt-2 text-sm leading-relaxed text-foreground/85">
+                        {n.description}
+                      </p>
+                    </Card>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* How to Reach */}
+            {m.howToReach && m.howToReach.length > 0 && (
+              <section className="mt-10">
+                <h2 className="flex items-center gap-2 font-display text-xl font-semibold sm:text-2xl">
+                  <Navigation className="h-5 w-5 text-primary" />
+                  How to Reach
+                </h2>
+                <div className="mt-4 space-y-3">
+                  {m.howToReach.map((htr, i) => {
+                    const modeIcon =
+                      htr.mode.toLowerCase().includes("air") ? (
+                        <Plane className="h-4 w-4" />
+                      ) : htr.mode.toLowerCase().includes("train") ? (
+                        <Train className="h-4 w-4" />
+                      ) : htr.mode.toLowerCase().includes("metro") ? (
+                        <Train className="h-4 w-4" />
+                      ) : (
+                        <Bus className="h-4 w-4" />
+                      );
+                    return (
+                      <div
+                        key={i}
+                        className="flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-4"
+                      >
+                        <div className="mt-0.5 shrink-0 text-primary">
+                          {modeIcon}
+                        </div>
+                        <div>
+                          <div className="text-sm font-semibold">{htr.mode}</div>
+                          <div className="mt-0.5 text-sm text-muted-foreground">
+                            {htr.details}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
+            {/* Facilities */}
+            {m.facilities && m.facilities.length > 0 && (
+              <section className="mt-10">
+                <h2 className="flex items-center gap-2 font-display text-xl font-semibold sm:text-2xl">
+                  <Landmark className="h-5 w-5 text-primary" />
+                  Facilities
+                </h2>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {m.facilities.map((f, i) => (
+                    <Badge key={i} variant="outline" className="px-3 py-1.5 text-sm">
+                      {f}
+                    </Badge>
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
-        )}
 
-        <div className="mt-8 flex flex-wrap gap-3">
+          {/* Sidebar */}
+          <aside className="space-y-6">
+            {/* Location card */}
+            <Card className="overflow-hidden">
+              <div className="bg-gradient-to-br from-primary/10 to-emerald-deep/10 p-4">
+                <h3 className="flex items-center gap-2 font-display font-semibold">
+                  <MapPin className="h-4 w-4 text-primary" />
+                  Location
+                </h3>
+              </div>
+              <div className="space-y-3 p-4 text-sm">
+                <div className="flex items-start gap-2">
+                  <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                  <div>
+                    <div className="font-medium">{m.location}</div>
+                    {m.addressDetail && (
+                      <div className="mt-0.5 text-muted-foreground">
+                        {m.addressDetail}
+                      </div>
+                    )}
+                    <div className="mt-1 text-muted-foreground">
+                      {m.city}, {m.country}
+                    </div>
+                  </div>
+                </div>
+                <a
+                  className="flex items-center gap-2 text-primary hover:underline"
+                  href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Navigation className="h-4 w-4" />
+                  Open in Google Maps
+                </a>
+              </div>
+            </Card>
+
+            {/* Contact card */}
+            {(m.contactInfo?.phone || m.contactInfo?.email || m.contactInfo?.website) && (
+              <Card className="overflow-hidden">
+                <div className="bg-gradient-to-br from-primary/10 to-emerald-deep/10 p-4">
+                  <h3 className="flex items-center gap-2 font-display font-semibold">
+                    <Contact className="h-4 w-4 text-primary" />
+                    Contact
+                  </h3>
+                </div>
+                <div className="space-y-3 p-4 text-sm">
+                  {m.contactInfo.phone && (
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      <span>{m.contactInfo.phone}</span>
+                    </div>
+                  )}
+                  {m.contactInfo.email && (
+                    <div className="flex items-center gap-2">
+                      <Wifi className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      <a
+                        href={`mailto:${m.contactInfo.email}`}
+                        className="text-primary hover:underline"
+                      >
+                        {m.contactInfo.email}
+                      </a>
+                    </div>
+                  )}
+                  {m.contactInfo.website && (
+                    <div className="flex items-center gap-2">
+                      <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground" />
+                      <a
+                        href={m.contactInfo.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        {m.contactInfo.website.replace(/^https?:\/\//, "")}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            )}
+
+            {/* Quick FAQ accordion */}
+            <Card className="overflow-hidden">
+              <div className="bg-gradient-to-br from-primary/10 to-emerald-deep/10 p-4">
+                <h3 className="font-display font-semibold">Quick Info</h3>
+              </div>
+              <Accordion type="single" collapsible className="w-full px-4">
+                <AccordionItem value="dress">
+                  <AccordionTrigger className="text-sm">
+                    Dress code
+                  </AccordionTrigger>
+                  <AccordionContent className="text-sm text-muted-foreground">
+                    Modest Islamic attire recommended. Men should cover shoulders
+                    and knees. Women should wear a headscarf and loose clothing.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="etiquette">
+                  <AccordionTrigger className="text-sm">
+                    Visiting etiquette
+                  </AccordionTrigger>
+                  <AccordionContent className="text-sm text-muted-foreground">
+                    Remove footwear before entering sacred areas. Maintain silence
+                    near the tomb. Photography may be restricted — ask locally.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="offerings">
+                  <AccordionTrigger className="text-sm">
+                    What to offer
+                  </AccordionTrigger>
+                  <AccordionContent className="text-sm text-muted-foreground">
+                    Flowers, chadars (sacred cloth), incense, and sweets are
+                    common offerings. Cash donations support shrine upkeep.
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </Card>
+          </aside>
+        </div>
+
+        <Separator className="my-10" />
+
+        {/* Action buttons */}
+        <div className="flex flex-wrap gap-3">
           <Link to="/maqam">
             <Button variant="outline" className="gap-2">
               <ArrowLeft className="h-4 w-4" /> Back to directory
@@ -232,10 +551,11 @@ function MaqamDetailPage() {
           )}
         </div>
 
+        {/* Related maqams */}
         {related.length > 0 && (
           <section className="mt-14">
             <h2 className="font-display text-xl font-semibold">Related maqams</h2>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((r) => (
                 <Link
                   key={r.id}
@@ -243,7 +563,7 @@ function MaqamDetailPage() {
                   params={{ id: r.id }}
                   className="block"
                 >
-                  <Card className="h-full p-4 transition-all hover:-translate-y-0.5 hover:shadow-elegant">
+                  <Card className="h-full p-4 transition-all hover:-translate-y-0.5 hover:shadow-card">
                     <div className="flex items-start justify-between gap-2">
                       <div className="font-display font-semibold">{r.name}</div>
                       <Badge variant="secondary" className="shrink-0 text-xs">
