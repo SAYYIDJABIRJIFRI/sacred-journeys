@@ -57,6 +57,7 @@ export const MAQAMS: Maqam[] = [
   {
     id: "mampuram",
     name: "Mampuram Maqam",
+    coverImage: coverMampuram,
     malayalamName: "മമ്പുറം മഖാം",
     location: "Mampuram Juma Masjid",
     city: "Tirurangadi, Malappuram",
