@@ -49,7 +49,7 @@ function findMaqam(id: string): Maqam | undefined {
   return MAQAMS.find((m) => m.id === id);
 }
 
-export const Route = createFileRoute("/maqam/$id")({
+export const Route = createFileRoute("/maqam_/$id")({
   loader: ({ params }) => {
     const maqam = findMaqam(params.id);
     if (!maqam) throw notFound();
