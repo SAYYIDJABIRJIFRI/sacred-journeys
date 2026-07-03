@@ -79,6 +79,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Ziyarath" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "Ziyarath — Discover Islamic Heritage" },
+      { name: "twitter:title", content: "Ziyarath — Discover Islamic Heritage" },
+      { property: "og:description", content: "A modern Islamic heritage discovery platform — mosques, dargahs, scholars and sacred places of Kerala, India and the world." },
+      { name: "twitter:description", content: "A modern Islamic heritage discovery platform — mosques, dargahs, scholars and sacred places of Kerala, India and the world." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/66ee3887-6da7-4794-af82-37628efdc680/id-preview-e0f67fa2--7c0a6069-a6eb-42ba-8f17-a20ef4b2b4b7.lovable.app-1783058034355.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/66ee3887-6da7-4794-af82-37628efdc680/id-preview-e0f67fa2--7c0a6069-a6eb-42ba-8f17-a20ef4b2b4b7.lovable.app-1783058034355.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
