@@ -117,6 +117,7 @@ export const MAQAMS: Maqam[] = [
   {
     id: "kondotty",
     name: "Kondotty Khubba",
+    coverImage: coverKondotty,
     malayalamName: "കൊണ്ടോട്ടി ഖുബ്ബ",
     location: "Kondotty Thakkiya",
     city: "Kondotty, Malappuram",
