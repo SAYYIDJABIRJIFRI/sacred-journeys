@@ -1,3 +1,9 @@
+import coverKondotty from "@/assets/maqam-kondotty.jpg";
+import coverMampuram from "@/assets/maqam-mampuram.jpg";
+import coverAjmer from "@/assets/maqam-ajmer.jpg";
+import coverKerala from "@/assets/kerala-heritage.jpg";
+import coverMosque from "@/assets/hero-mosque.jpg";
+
 export type MaqamRegion = "kerala" | "india" | "middle-east" | "worldwide";
 export type MaqamCategory = "sahaba" | "sufi" | "scholar" | "shaheed" | "prophet";
 
