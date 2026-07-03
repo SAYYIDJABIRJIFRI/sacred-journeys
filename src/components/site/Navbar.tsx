@@ -3,6 +3,8 @@ import { Moon, Sun, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
+import logoMark from "@/assets/ziyarath-mark.png.asset.json";
+import logoFull from "@/assets/ziyarath-logo.png.asset.json";
 
 const NAV = [
   { to: "/", label: "Home" },
@@ -35,13 +37,17 @@ export function Navbar() {
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="flex items-center gap-2 group">
-          <span className="grid h-9 w-9 place-items-center rounded-full gradient-hero shadow-elegant">
-            <span className="text-gradient-gold font-display text-lg font-bold">Z</span>
-          </span>
-          <span className="font-display text-xl font-semibold tracking-tight">
-            Ziyarath
-          </span>
+        <Link to="/" className="flex items-center group" aria-label="Ziyarath home">
+          <img
+            src={logoFull.url}
+            alt="Ziyarath"
+            className="hidden h-9 w-auto sm:block"
+          />
+          <img
+            src={logoMark.url}
+            alt="Ziyarath"
+            className="h-9 w-9 sm:hidden"
+          />
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
