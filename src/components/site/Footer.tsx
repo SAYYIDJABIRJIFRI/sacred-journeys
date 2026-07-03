@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Github, Twitter, Instagram, Mail } from "lucide-react";
+import logoFull from "@/assets/ziyarath-logo.png.asset.json";
 
 export function Footer() {
   return (
@@ -7,12 +8,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2">
-              <span className="grid h-9 w-9 place-items-center rounded-full gradient-hero">
-                <span className="text-gradient-gold font-display font-bold">Z</span>
-              </span>
-              <span className="font-display text-xl font-semibold">Ziyarath</span>
-            </div>
+            <img src={logoFull.url} alt="Ziyarath" className="h-10 w-auto" />
             <p className="mt-4 max-w-md text-sm text-muted-foreground leading-relaxed">
               A modern Islamic heritage discovery platform — exploring sacred mosques,
               dargahs, scholars and the rich Islamic history of Kerala, India and the world.
