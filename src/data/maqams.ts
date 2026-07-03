@@ -1,6 +1,12 @@
 export type MaqamRegion = "kerala" | "india" | "middle-east" | "worldwide";
 export type MaqamCategory = "sahaba" | "sufi" | "scholar" | "shaheed" | "prophet";
 
+export type MaqamImage = {
+  src: string;
+  caption?: string;
+  alt?: string;
+};
+
 export type Maqam = {
   id: string;
   name: string;
@@ -15,6 +21,30 @@ export type Maqam = {
   significance?: string;
   bestTimeToVisit?: string;
   sourceUrl?: string;
+  coverImage?: string;
+  images?: MaqamImage[];
+  addressDetail?: string;
+  visitingHours?: {
+    label: string;
+    hours: string;
+  }[];
+  nerchaa?: {
+    title: string;
+    description: string;
+    month?: string;
+  }[];
+  howToReach?: {
+    mode: string;
+    details: string;
+  }[];
+  contactInfo?: {
+    phone?: string;
+    email?: string;
+    website?: string;
+  };
+  facilities?: string[];
+  history?: string;
+  architecture?: string;
 };
 
 export const MAQAMS: Maqam[] = [
