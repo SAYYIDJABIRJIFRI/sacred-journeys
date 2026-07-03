@@ -161,7 +161,20 @@ function MaqamDetailPage() {
       {/* Hero image area */}
       <div className="relative w-full overflow-hidden bg-gradient-to-b from-primary/10 to-background">
         <div className="pattern-geometric absolute inset-0 opacity-40" />
-        <div className="relative mx-auto max-w-5xl px-4 pb-8 pt-10 sm:px-6 sm:pb-12 sm:pt-14 lg:px-8">
+        {m.coverImage && (
+          <div className="relative mx-auto max-w-5xl px-4 pt-6 sm:px-6 lg:px-8">
+            <div className="overflow-hidden rounded-xl shadow-elegant">
+              <img
+                src={m.coverImage}
+                alt={`${m.name} cover`}
+                className="h-48 w-full object-cover sm:h-64 lg:h-80"
+                width={1280}
+                height={640}
+              />
+            </div>
+          </div>
+        )}
+        <div className="relative mx-auto max-w-5xl px-4 pb-8 pt-6 sm:px-6 sm:pb-12 sm:pt-8 lg:px-8">
           <Breadcrumb className="mb-6">
             <BreadcrumbList>
               <BreadcrumbItem>
