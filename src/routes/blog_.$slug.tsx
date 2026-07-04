@@ -25,14 +25,44 @@ export const Route = createFileRoute("/blog_/$slug")({
     const related = all.filter((p) => p.slug !== post.slug).slice(0, 3);
     return { post, related };
   },
-  head: ({ loaderData }) => {
+  head: ({ loaderData, params }) => {
     const post = loaderData?.post;
     if (!post) {
       return { meta: [{ title: "Article not found — Ziyarath" }] };
     }
+    const SITE = "https://ziyarath-heritage-explore.lovable.app";
+    const url = `${SITE}/blog/${params.slug}`;
     const title = post.seoTitle || `${post.title} — Ziyarath`;
     const description = post.seoDescription || post.excerpt || "";
     const image = resolveCover(post.slug, postImageUrl(post, 1200, 675));
+    const blogPostingLd: Record<string, unknown> = {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: post.title,
+      description: post.excerpt || description,
+      image: [image],
+      datePublished: post.publishedAt,
+      dateModified: post.publishedAt,
+      author: {
+        "@type": post.author ? "Person" : "Organization",
+        name: post.author ?? "Ziyarath",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "Ziyarath",
+        logo: {
+          "@type": "ImageObject",
+          url: `${SITE}/favicon.png`,
+        },
+      },
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": url,
+      },
+      url,
+      ...(post.tag ? { keywords: post.tag, articleSection: post.tag } : {}),
+      inLanguage: "en",
+    };
     return {
       meta: [
         { title },
@@ -44,14 +74,31 @@ export const Route = createFileRoute("/blog_/$slug")({
         { property: "og:type", content: "article" },
         { property: "og:title", content: post.title },
         { property: "og:description", content: description },
+        { property: "og:url", content: url },
         { property: "og:image", content: image },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: post.title },
         { name: "twitter:description", content: description },
         { name: "twitter:image", content: image },
       ],
-      links: [
-        { rel: "canonical", href: `https://ziyarath.com/blog/${post.slug}` },
+      links: [{ rel: "canonical", href: url }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(blogPostingLd),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: `${SITE}/` },
+              { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE}/blog` },
+              { "@type": "ListItem", position: 3, name: post.title, item: url },
+            ],
+          }),
+        },
       ],
     };
   },
