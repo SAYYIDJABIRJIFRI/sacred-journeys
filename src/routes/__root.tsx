@@ -97,6 +97,50 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap",
       },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "@id": "https://ziyarath-heritage-explore.lovable.app/#organization",
+          name: "Ziyarath",
+          url: "https://ziyarath-heritage-explore.lovable.app",
+          logo: {
+            "@type": "ImageObject",
+            url: "https://ziyarath-heritage-explore.lovable.app/favicon.png",
+          },
+          description:
+            "A modern Islamic heritage discovery platform — mosques, dargahs, scholars and sacred places of Kerala, India and the world.",
+          sameAs: [],
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "@id": "https://ziyarath-heritage-explore.lovable.app/#website",
+          url: "https://ziyarath-heritage-explore.lovable.app",
+          name: "Ziyarath",
+          description:
+            "Discover mosques, dargahs, scholars and sacred places across Kerala, India and the world.",
+          inLanguage: "en",
+          publisher: {
+            "@id": "https://ziyarath-heritage-explore.lovable.app/#organization",
+          },
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate:
+                "https://ziyarath-heritage-explore.lovable.app/maqam?q={search_term_string}",
+            },
+            "query-input": "required name=search_term_string",
+          },
+        }),
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,

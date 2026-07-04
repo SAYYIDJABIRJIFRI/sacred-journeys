@@ -19,26 +19,48 @@ export const Route = createFileRoute("/")({
     const posts = await sanityClient.fetch<SanityPost[]>(allPostsQuery);
     return { posts: posts.slice(0, 3) };
   },
-  head: () => ({
-    meta: [
-      { title: "Ziyarath — Discover Islamic Heritage Across Kerala, India & The World" },
-      {
-        name: "description",
-        content:
-          "Explore mosques, dargahs, Islamic history, scholars and sacred places through Ziyarath, a modern Islamic heritage discovery platform.",
-      },
-      { property: "og:title", content: "Ziyarath — Islamic Heritage Discovery" },
-      {
-        property: "og:description",
-        content:
-          "A modern platform to discover sacred mosques, dargahs and Islamic heritage in Kerala, India and worldwide.",
-      },
-      { property: "og:image", content: heroMosque },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:image", content: heroMosque },
-    ],
-  }),
+  head: () => {
+    const SITE = "https://ziyarath-heritage-explore.lovable.app";
+    return {
+      meta: [
+        { title: "Ziyarath — Discover Islamic Heritage Across Kerala, India & The World" },
+        {
+          name: "description",
+          content:
+            "Explore mosques, dargahs, Islamic history, scholars and sacred places through Ziyarath, a modern Islamic heritage discovery platform.",
+        },
+        { property: "og:title", content: "Ziyarath — Islamic Heritage Discovery" },
+        {
+          property: "og:description",
+          content:
+            "A modern platform to discover sacred mosques, dargahs and Islamic heritage in Kerala, India and worldwide.",
+        },
+        { property: "og:image", content: heroMosque },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: `${SITE}/` },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:image", content: heroMosque },
+      ],
+      links: [{ rel: "canonical", href: `${SITE}/` }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "@id": `${SITE}/#webpage`,
+            url: `${SITE}/`,
+            name: "Ziyarath — Discover Islamic Heritage",
+            description:
+              "Explore mosques, dargahs, Islamic history, scholars and sacred places across Kerala, India and the world.",
+            isPartOf: { "@id": `${SITE}/#website` },
+            about: { "@id": `${SITE}/#organization` },
+            inLanguage: "en",
+          }),
+        },
+      ],
+    };
+  },
   component: HomePage,
 });
 
