@@ -199,24 +199,8 @@ function PostPage() {
   const coverImage = resolveCover(post.slug, postImageUrl(post, 1600, 900));
   const dateLabel = formatDate(post.publishedAt);
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.title,
-    description: post.excerpt,
-    image: coverImage,
-    datePublished: post.publishedAt,
-    author: { "@type": "Organization", name: post.author ?? "Ziyarath" },
-    publisher: { "@type": "Organization", name: "Ziyarath" },
-    mainEntityOfPage: `https://ziyarath.com/blog/${post.slug}`,
-  };
-
   return (
     <SiteLayout>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
       <article>
         <header className="border-b border-border bg-secondary/40">
           <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
