@@ -202,9 +202,14 @@ function UroosPage() {
           <div className="mt-8 mx-auto flex max-w-xl flex-col sm:flex-row items-stretch gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <label htmlFor="uroos-search" className="sr-only">
+                Search uroos by name, place, or month
+              </label>
               <Input
+                id="uroos-search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
+                aria-label="Search uroos by name, place, or month"
                 placeholder="തിരയുക — പേര്, സ്ഥലം, മാസം..."
                 className="pl-9 pr-9 h-11 bg-card"
               />
@@ -212,7 +217,7 @@ function UroosPage() {
                 <button
                   onClick={() => setQuery("")}
                   className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-muted text-muted-foreground"
-                  aria-label="Clear"
+                  aria-label="Clear search"
                 >
                   <X className="h-4 w-4" />
                 </button>

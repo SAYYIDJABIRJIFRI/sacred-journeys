@@ -23,7 +23,7 @@ export const Route = createFileRoute("/")({
     const SITE = "https://ziyarath-heritage-explore.lovable.app";
     return {
       meta: [
-        { title: "Ziyarath — Discover Islamic Heritage Across Kerala, India & The World" },
+        { title: "Ziyarath — Islamic Heritage in Kerala, India & World" },
         {
           name: "description",
           content:
@@ -188,7 +188,10 @@ function HomePage() {
                 <div className="p-6">
                   <h3 className="font-display text-xl font-semibold">{p.name}</h3>
                   <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{p.desc}</p>
-                  <button className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition-all hover:gap-2.5">
+                  <button
+                    aria-label={`Explore ${p.name}`}
+                    className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition-all hover:gap-2.5"
+                  >
                     Explore <ArrowRight className="h-4 w-4" />
                   </button>
                 </div>
@@ -314,19 +317,30 @@ function HomePage() {
                 className="mt-8 grid gap-3 sm:grid-cols-[1fr_1fr_auto]"
                 onSubmit={(e) => e.preventDefault()}
               >
+                <label htmlFor="newsletter-email" className="sr-only">
+                  Email address
+                </label>
                 <input
+                  id="newsletter-email"
                   type="email"
                   required
+                  aria-label="Email address"
                   placeholder="Email address"
                   className="rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm placeholder:text-white/60 backdrop-blur outline-none focus:border-gold"
                 />
+                <label htmlFor="newsletter-phone" className="sr-only">
+                  WhatsApp number (optional)
+                </label>
                 <input
+                  id="newsletter-phone"
                   type="tel"
+                  aria-label="WhatsApp number (optional)"
                   placeholder="WhatsApp number (optional)"
                   className="rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm placeholder:text-white/60 backdrop-blur outline-none focus:border-gold"
                 />
                 <button
                   type="submit"
+                  aria-label="Subscribe to the Ziyarath newsletter"
                   className="rounded-full gradient-gold px-6 py-3 text-sm font-semibold text-gold-foreground transition-transform hover:scale-105"
                 >
                   Subscribe
