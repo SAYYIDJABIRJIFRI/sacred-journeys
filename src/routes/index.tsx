@@ -41,7 +41,10 @@ export const Route = createFileRoute("/")({
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:image", content: heroMosque },
       ],
-      links: [{ rel: "canonical", href: `${SITE}/` }],
+      links: [
+        { rel: "canonical", href: `${SITE}/` },
+        { rel: "preload", as: "image", href: heroMosque, fetchpriority: "high" },
+      ],
       scripts: [
         {
           type: "application/ld+json",
@@ -141,6 +144,8 @@ function HomePage() {
               alt="Serene mosque silhouette at dawn with Islamic geometric patterns"
               width={1536}
               height={1024}
+              fetchPriority="high"
+              decoding="async"
               className="relative w-full rounded-[2rem] border border-white/10 shadow-elegant"
             />
           </div>
