@@ -3,7 +3,7 @@ import { sanityClient } from "@/lib/sanity";
 import { MAQAMS } from "@/data/maqams";
 
 const ROUTES = ["/", "/about", "/blog", "/uroos", "/maqam", "/contact", "/privacy"];
-const BASE = "https://ziyarath.com";
+const BASE = "https://ziyarath-heritage-explore.lovable.app";
 
 type SitemapPost = { slug: string; publishedAt?: string; _updatedAt?: string };
 
