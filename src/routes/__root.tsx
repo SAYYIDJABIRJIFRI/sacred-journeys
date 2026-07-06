@@ -72,6 +72,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "google-site-verification", content: "gU5Mrgagf-0z_bJT-xy7ekCJsLdLiCwF5UWvCsQWxG4" },
       { title: "Ziyarath — Discover Islamic Heritage" },
       { name: "description", content: "A modern Islamic heritage discovery platform — mosques, dargahs, scholars and sacred places of Kerala, India and the world." },
       { name: "author", content: "Ziyarath" },
