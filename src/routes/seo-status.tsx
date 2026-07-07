@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/SiteLayout";
 import { CheckCircle2, XCircle, ExternalLink } from "lucide-react";
 
-const BASE = "https://ziyarath-heritage-explore.lovable.app";
+const BASE = "https://ziyarath.com";
 const VERIFICATION_TOKEN = "gU5Mrgagf-0z_bJT-xy7ekCJsLdLiCwF5UWvCsQWxG4";
 
 type CheckResult = {
