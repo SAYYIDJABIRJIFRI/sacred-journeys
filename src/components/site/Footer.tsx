@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Github, Twitter, Instagram, Mail } from "lucide-react";
-import logoFull from "@/assets/ziyarath-logo.png.asset.json";
+import logoFull from "@/assets/ziyarath-logo.png";
 
 export function Footer() {
   return (
