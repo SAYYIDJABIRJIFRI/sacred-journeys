@@ -3,8 +3,8 @@ import { Moon, Sun, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
-import logoMark from "@/assets/ziyarath-mark.png.asset.json";
-import logoFull from "@/assets/ziyarath-logo.png.asset.json";
+import logoMark from "@/assets/ziyarath-mark.png";
+import logoFull from "@/assets/ziyarath-logo.png";
 
 const NAV = [
   { to: "/", label: "Home" },
@@ -39,12 +39,12 @@ export function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center group" aria-label="Ziyarath home">
           <img
-            src={logoFull.url}
+            src={logoFull}
             alt="Ziyarath"
             className="hidden h-9 w-auto sm:block"
           />
           <img
-            src={logoMark.url}
+            src={logoMark}
             alt="Ziyarath"
             className="h-9 w-9 sm:hidden"
           />
