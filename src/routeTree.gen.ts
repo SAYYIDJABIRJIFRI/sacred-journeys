@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UroosRouteImport } from './routes/uroos'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SeoStatusRouteImport } from './routes/seo-status'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MaqamRouteImport } from './routes/maqam'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -28,6 +29,11 @@ const UroosRoute = UroosRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SeoStatusRoute = SeoStatusRouteImport.update({
+  id: '/seo-status',
+  path: '/seo-status',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -77,6 +83,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/maqam': typeof MaqamRoute
   '/privacy': typeof PrivacyRoute
+  '/seo-status': typeof SeoStatusRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/uroos': typeof UroosRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/maqam': typeof MaqamRoute
   '/privacy': typeof PrivacyRoute
+  '/seo-status': typeof SeoStatusRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/uroos': typeof UroosRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/maqam': typeof MaqamRoute
   '/privacy': typeof PrivacyRoute
+  '/seo-status': typeof SeoStatusRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/uroos': typeof UroosRoute
   '/blog_/$slug': typeof BlogSlugRoute
@@ -116,6 +125,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/maqam'
     | '/privacy'
+    | '/seo-status'
     | '/sitemap.xml'
     | '/uroos'
     | '/blog/$slug'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/maqam'
     | '/privacy'
+    | '/seo-status'
     | '/sitemap.xml'
     | '/uroos'
     | '/blog/$slug'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/maqam'
     | '/privacy'
+    | '/seo-status'
     | '/sitemap.xml'
     | '/uroos'
     | '/blog_/$slug'
@@ -153,6 +165,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   MaqamRoute: typeof MaqamRoute
   PrivacyRoute: typeof PrivacyRoute
+  SeoStatusRoute: typeof SeoStatusRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   UroosRoute: typeof UroosRoute
   BlogSlugRoute: typeof BlogSlugRoute
@@ -174,6 +187,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/seo-status': {
+      id: '/seo-status'
+      path: '/seo-status'
+      fullPath: '/seo-status'
+      preLoaderRoute: typeof SeoStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -241,6 +261,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   MaqamRoute: MaqamRoute,
   PrivacyRoute: PrivacyRoute,
+  SeoStatusRoute: SeoStatusRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   UroosRoute: UroosRoute,
   BlogSlugRoute: BlogSlugRoute,
@@ -250,13 +271,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
