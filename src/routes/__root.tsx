@@ -104,12 +104,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
-          "@id": "https://ziyarath-heritage-explore.lovable.app/#organization",
+          "@id": "https://ziyarath.com/#organization",
           name: "Ziyarath",
-          url: "https://ziyarath-heritage-explore.lovable.app",
+          url: "https://ziyarath.com",
           logo: {
             "@type": "ImageObject",
-            url: "https://ziyarath-heritage-explore.lovable.app/favicon.png",
+            url: "https://ziyarath.com/favicon.png",
           },
           description:
             "A modern Islamic heritage discovery platform — mosques, dargahs, scholars and sacred places of Kerala, India and the world.",
@@ -121,21 +121,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "WebSite",
-          "@id": "https://ziyarath-heritage-explore.lovable.app/#website",
-          url: "https://ziyarath-heritage-explore.lovable.app",
+          "@id": "https://ziyarath.com/#website",
+          url: "https://ziyarath.com",
           name: "Ziyarath",
           description:
             "Discover mosques, dargahs, scholars and sacred places across Kerala, India and the world.",
           inLanguage: "en",
           publisher: {
-            "@id": "https://ziyarath-heritage-explore.lovable.app/#organization",
+            "@id": "https://ziyarath.com/#organization",
           },
           potentialAction: {
             "@type": "SearchAction",
             target: {
               "@type": "EntryPoint",
               urlTemplate:
-                "https://ziyarath-heritage-explore.lovable.app/maqam?q={search_term_string}",
+                "https://ziyarath.com/maqam?q={search_term_string}",
             },
             "query-input": "required name=search_term_string",
           },

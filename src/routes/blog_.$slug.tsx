@@ -30,7 +30,7 @@ export const Route = createFileRoute("/blog_/$slug")({
     if (!post) {
       return { meta: [{ title: "Article not found — Ziyarath" }] };
     }
-    const SITE = "https://ziyarath-heritage-explore.lovable.app";
+    const SITE = "https://ziyarath.com";
     const url = `${SITE}/blog/${params.slug}`;
     const title = post.seoTitle || `${post.title} — Ziyarath`;
     const description = post.seoDescription || post.excerpt || "";

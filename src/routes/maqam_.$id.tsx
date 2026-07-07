@@ -62,7 +62,7 @@ export const Route = createFileRoute("/maqam_/$id")({
         meta: [{ title: "Maqam not found — Ziyarath" }],
       };
     }
-    const SITE = "https://ziyarath-heritage-explore.lovable.app";
+    const SITE = "https://ziyarath.com";
     const title = `${m.name} — Ziyarath`;
     const description = m.description.slice(0, 155);
     const url = `${SITE}/maqam/${params.id}`;

@@ -20,7 +20,7 @@ export const Route = createFileRoute("/")({
     return { posts: posts.slice(0, 3) };
   },
   head: () => {
-    const SITE = "https://ziyarath-heritage-explore.lovable.app";
+    const SITE = "https://ziyarath.com";
     return {
       meta: [
         { title: "Ziyarath — Islamic Heritage in Kerala, India & World" },
