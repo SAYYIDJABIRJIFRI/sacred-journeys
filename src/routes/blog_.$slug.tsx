@@ -101,7 +101,7 @@ export const Route = createFileRoute("/blog_/$slug")({
       scripts: [
         {
           type: "application/ld+json",
-          children: JSON.stringify(blogPostingLd),
+          children: JSON.stringify(articleLd),
         },
         {
           type: "application/ld+json",
