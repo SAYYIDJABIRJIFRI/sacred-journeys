@@ -35,9 +35,22 @@ export const Route = createFileRoute("/blog_/$slug")({
     const title = post.seoTitle || `${post.title} — Ziyarath`;
     const description = post.seoDescription || post.excerpt || "";
     const image = resolveCover(post.slug, postImageUrl(post, 1200, 675));
-    const blogPostingLd: Record<string, unknown> = {
+    const extractText = (body: unknown): string => {
+      if (!Array.isArray(body)) return "";
+      return body
+        .map((block) => {
+          const b = block as { _type?: string; children?: Array<{ text?: string }> };
+          if (b._type !== "block" || !Array.isArray(b.children)) return "";
+          return b.children.map((c) => c.text ?? "").join("");
+        })
+        .join(" ")
+        .trim();
+    };
+    const plainText = extractText((post as PostWithBody).body);
+    const wordCount = plainText ? plainText.split(/\s+/).filter(Boolean).length : undefined;
+    const articleLd: Record<string, unknown> = {
       "@context": "https://schema.org",
-      "@type": "BlogPosting",
+      "@type": "Article",
       headline: post.title,
       description: post.excerpt || description,
       image: [image],
@@ -46,10 +59,12 @@ export const Route = createFileRoute("/blog_/$slug")({
       author: {
         "@type": post.author ? "Person" : "Organization",
         name: post.author ?? "Ziyarath",
+        ...(post.author ? { url: `${SITE}/about` } : { url: SITE }),
       },
       publisher: {
         "@type": "Organization",
         name: "Ziyarath",
+        url: SITE,
         logo: {
           "@type": "ImageObject",
           url: `${SITE}/favicon.png`,
@@ -61,6 +76,7 @@ export const Route = createFileRoute("/blog_/$slug")({
       },
       url,
       ...(post.tag ? { keywords: post.tag, articleSection: post.tag } : {}),
+      ...(wordCount ? { wordCount } : {}),
       inLanguage: "en",
     };
     return {
