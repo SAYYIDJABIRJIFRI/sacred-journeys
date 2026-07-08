@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "ziyarath-mcp",
+      "version": "0.1.0",
+      "title": "Ziyarath — Islamic Heritage"
+    },
+    "tools": [
+      {
+        "name": "list_blog_posts",
+        "title": "List blog posts",
+        "description": "List all published Ziyarath blog articles on Islamic history, Kerala heritage, sacred mosques and scholars. Returns title, slug, excerpt, tag, author and publish date.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "description": "Maximum number of posts to return (default 20).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_blog_post",
+        "title": "Get blog post",
+        "description": "Fetch the full content of a single Ziyarath blog article by its slug, including the article body (portable text).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "slug": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The blog post slug, e.g. 'kerala-islamic-heritage'."
+            }
+          },
+          "required": [
+            "slug"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_maqams",
+        "title": "List maqams (sacred sites)",
+        "description": "List sacred Islamic sites (maqams / dargahs / shrines) documented on Ziyarath, with optional filtering by region or category. Returns name, location, category, era and a short description.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "region": {
+              "description": "Filter by region.",
+              "type": "string",
+              "enum": [
+                "kerala",
+                "india",
+                "middle-east",
+                "worldwide"
+              ]
+            },
+            "category": {
+              "description": "Filter by category of the person the maqam commemorates.",
+              "type": "string",
+              "enum": [
+                "sahaba",
+                "sufi",
+                "scholar",
+                "shaheed",
+                "prophet"
+              ]
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_maqam",
+        "title": "Get maqam details",
+        "description": "Fetch the full detail of a single maqam (sacred site) by its id, including significance, visiting hours, addresses and nercha events.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The maqam id, e.g. 'mampuram' or 'ajmer-sharif'."
+            }
+          },
+          "required": [
+            "id"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
