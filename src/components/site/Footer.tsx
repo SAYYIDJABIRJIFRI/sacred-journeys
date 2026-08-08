@@ -6,7 +6,7 @@ export function Footer() {
   return (
     <footer className="relative mt-24 border-t border-border bg-card">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-4">
+        <div className="grid gap-10 md:grid-cols-5">
           <div className="md:col-span-2">
             <img src={logoFull} alt="Ziyarath" className="h-10 w-auto" />
             <p className="mt-4 max-w-md text-sm text-muted-foreground leading-relaxed">
@@ -25,6 +25,24 @@ export function Footer() {
               <li><Link to="/blog" className="hover:text-primary">Blog</Link></li>
               <li><Link to="/contact" className="hover:text-primary">Contact</Link></li>
               <li><Link to="/privacy" className="hover:text-primary">Privacy Policy</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-foreground">
+              Ecosystem
+            </h4>
+            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+              <li>
+                <a
+                  href="https://token.ziyarath.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary"
+                >
+                  Token Distribution
+                </a>
+              </li>
             </ul>
           </div>
 
